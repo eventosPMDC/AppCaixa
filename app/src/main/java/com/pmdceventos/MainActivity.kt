@@ -6,7 +6,9 @@ import android.os.Bundle
 import androidx.core.content.PermissionChecker
 import android.content.pm.PackageManager
 import android.os.Build
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.pmdceventos.databinding.ActivityMainBinding
 
@@ -28,8 +30,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {
-            // A permissão já foi concedida
-            // Capturar o número de série
+            // TP1A.220624.014
             serialNnbr = Build.ID
         } else {
             // Solicitar a permissão ao usuário
@@ -40,8 +41,8 @@ class MainActivity : AppCompatActivity() {
         }
         if (serialNnbr != "") {
             binding.tvText.text = serialNnbr
-
         }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -69,6 +70,19 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+        }
+    }
+
+    fun showDialog(view: View) {
+        if (view.id == R.id.ibtn_config){
+            val alertDialog = AlertDialog.Builder(this)
+            val inflater = layoutInflater
+            val view = inflater.inflate(R.layout.menu_ferramentas, null)
+
+            alertDialog.setView(view)
+            val dialog = alertDialog.create()
+
+            dialog.show()
         }
     }
 }
