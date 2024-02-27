@@ -4,6 +4,76 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".configCx">
+    tools:context=".ConfigCx">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:gravity="center"
+        android:text="Configurações do Caixa"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <LinearLayout
+        android:id="@+id/ll_configcx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
+        tools:ignore="MissingConstraints"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/edt_chaveunica"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Chave de identificação do dispositivo"
+            android:layout_margin="25dp"
+            android:padding="15dp"
+            android:enabled="false"
+            />
+
+        <EditText
+            android:id="@+id/edt_caixa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Número do caixa(Ex: CAIXA001)"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:padding="15dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_btns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/ll_configcx"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
+        tools:ignore="MissingConstraints"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="OK"
+            android:textSize="19sp"
+            android:textAllCaps="false"
+            android:padding="15dp"
+            android:layout_margin="40dp"
+            />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

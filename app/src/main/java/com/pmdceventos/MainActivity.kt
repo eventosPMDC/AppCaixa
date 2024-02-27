@@ -1,12 +1,14 @@
 package com.pmdceventos
 
 import android.Manifest.permission
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.PermissionChecker
 import android.content.pm.PackageManager
 import android.os.Build
 import android.view.View
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             binding.tvText.text = serialNnbr
         }
 
+
     }
 
     override fun onRequestPermissionsResult(
@@ -77,11 +80,16 @@ class MainActivity : AppCompatActivity() {
         if (view.id == R.id.ibtn_config){
             val alertDialog = AlertDialog.Builder(this)
             val inflater = layoutInflater
-            val view = inflater.inflate(R.layout.menu_ferramentas, null)
-
+            val view = inflater.inflate(R.layout.activity_menu_ferramentas, null)
             alertDialog.setView(view)
             val dialog = alertDialog.create()
-
+            val btnCnfcx = view.findViewById<ImageButton>(R.id.ibtn_configcx)
+            btnCnfcx.setOnClickListener{
+                val intent = Intent(this, ConfigCx::class.java)
+                intent.putExtra("serialNmbr", serialNnbr)
+                startActivity(intent)
+                dialog.dismiss()
+            }
             dialog.show()
         }
     }

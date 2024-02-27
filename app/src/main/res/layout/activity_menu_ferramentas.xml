@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MenuFerramentas">
 
     <LinearLayout
         android:id="@+id/acoescaixa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_marginTop="32dp"
         android:orientation="horizontal">
 
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="Clique aqui para abrir o Caixa."
-            android:src="@drawable/configuracao_24"
+            android:src="@drawable/baseline_catching_pokemon"
             tools:ignore="TouchTargetSizeCheck" />
 
         <ImageButton
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="Clique aqui para fechar o Caixa."
-            android:src="@drawable/configuracao_24" />
+            android:src="@drawable/baseline_catching_pokemon" />
     </LinearLayout>
 
     <ImageButton
@@ -37,10 +37,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/acoescaixa"
         android:layout_centerInParent="true"
-        android:layout_weight="1"
         android:layout_marginTop="30dp"
+        android:layout_weight="1"
         android:contentDescription="Clique aqui para as configurações do Caixa"
-        android:src="@drawable/configuracao_24" />
+        android:src="@drawable/baseline_catching_pokemon" />
 
 
 </RelativeLayout>
