@@ -12,15 +12,17 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import com.google.firebase.firestore.FirebaseFirestore
 import com.pmdceventos.databinding.ActivityMainBinding
 
-var serialNnbr: String? = null
+var serialNnbr: String? = ""
+var numCx: String? = ""
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
-
+    private var db = FirebaseFirestore.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {
             // TP1A.220624.014
             serialNnbr = Build.ID
+            getCaixa(Build.ID)
         } else {
             // Solicitar a permissão ao usuário
             //requestPermissions(arrayOf(permission.READ_PHONE_STATE),0)
@@ -43,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (serialNnbr != "") {
             binding.tvText.text = serialNnbr
+
         }
 
 
@@ -64,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                     this,
                     "Não houve configuração de caixa ainda, por favor fazer a configuração para utilizar o sistema.$serialNnbr",
                     Toast.LENGTH_LONG).show()
+                getCaixa(serialNnbr)
             } else {
                 // A permissão foi negada
                 // Mostrar uma mensagem ao usuário informando que a permissão é necessária
@@ -80,17 +85,28 @@ class MainActivity : AppCompatActivity() {
         if (view.id == R.id.ibtn_config){
             val alertDialog = AlertDialog.Builder(this)
             val inflater = layoutInflater
-            val view = inflater.inflate(R.layout.activity_menu_ferramentas, null)
-            alertDialog.setView(view)
+            val viewMF = inflater.inflate(R.layout.activity_menu_ferramentas, null)
+            alertDialog.setView(viewMF)
             val dialog = alertDialog.create()
-            val btnCnfcx = view.findViewById<ImageButton>(R.id.ibtn_configcx)
+            val btnCnfcx = viewMF.findViewById<ImageButton>(R.id.ibtn_configcx)
             btnCnfcx.setOnClickListener{
                 val intent = Intent(this, ConfigCx::class.java)
                 intent.putExtra("serialNmbr", serialNnbr)
+                if (numCx != "") {
+                    intent.putExtra("caixa", numCx)
+                }
                 startActivity(intent)
                 dialog.dismiss()
             }
             dialog.show()
+        }
+    }
+    private fun getCaixa(srlNmb: String?){
+        val rqstCaixa = db.collection("Config").document(srlNmb.toString())
+        rqstCaixa.get().addOnSuccessListener {
+            if (it != null){
+                numCx = it.data?.get("caixa").toString()
+            }
         }
     }
 }

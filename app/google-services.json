@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "294965185315",
+    "project_id": "eventos-b1e5c",
+    "storage_bucket": "eventos-b1e5c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294965185315:android:580650c6d89a7f43f2da96",
+        "android_client_info": {
+          "package_name": "com.pmdceventos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJvtPDshjtI20c4Yuz4TE8sdkx-gsrKm4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
