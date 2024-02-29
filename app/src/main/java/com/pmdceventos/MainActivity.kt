@@ -12,6 +12,8 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pmdceventos.databinding.ActivityMainBinding
 
@@ -23,6 +25,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
     private var db = FirebaseFirestore.getInstance()
+    private lateinit var newRecyclerView: RecyclerView
+    private lateinit var newArrayList: ArrayList<ItensLista>
+    lateinit var arrdesc : Array<String>
+    lateinit var arrvlit : Array<String>
+    lateinit var arrvltt : Array<Double>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -49,7 +57,31 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        arrdesc = arrayOf("REFRIGERANTE","CERVEJA")
+        arrvlit = arrayOf("4 X 4,00", "1 x 6,00")
+        arrvltt = arrayOf(1000.00,6.00)
 
+        newRecyclerView = findViewById(R.id.rv_itens)
+        newRecyclerView.layoutManager = LinearLayoutManager(this)
+        newRecyclerView.setHasFixedSize(true)
+        newArrayList = arrayListOf<ItensLista>()
+        getUserData()
+        /*val metrics = resources.displayMetrics
+        val width = metrics.widthPixels
+        val heigth = metrics.heightPixels
+        Toast.makeText(this, "Resolução: $width x $heigth", Toast.LENGTH_SHORT).show()*/
+    }
+
+    private fun getUserData() {
+        for( i in arrdesc.indices){
+            val itensLista = ItensLista(arrdesc[i],arrvlit[i],arrvltt[i])
+            newArrayList.add(itensLista)
+        }
+        newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
+    }
+
+    private fun deleteItem(index :Int){
+        Toast.makeText(this, "item pos $index", Toast.LENGTH_SHORT).show()
     }
 
     override fun onRequestPermissionsResult(
@@ -109,4 +141,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
 }
