@@ -16,9 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pmdceventos.databinding.ActivityMainBinding
+import java.text.NumberFormat
+import java.util.Locale
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
+var vlrTotGeral: Double? = 0.00
+
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
 
 class MainActivity : AppCompatActivity() {
@@ -70,6 +74,17 @@ class MainActivity : AppCompatActivity() {
         val width = metrics.widthPixels
         val heigth = metrics.heightPixels
         Toast.makeText(this, "Resolução: $width x $heigth", Toast.LENGTH_SHORT).show()*/
+        binding.btnTeste.setOnClickListener {
+            geraDados("CHOPP","3 X 8,00", 24.00)
+        }
+
+    }
+
+    private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double) {
+        val itensLista = ItensLista(descricao,qtdvlri,vlrtt)
+        newArrayList.add(itensLista)
+        newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
+        atualizarTotalGeral()
     }
 
     private fun getUserData() {
@@ -78,10 +93,14 @@ class MainActivity : AppCompatActivity() {
             newArrayList.add(itensLista)
         }
         newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
+        atualizarTotalGeral()
     }
 
-    private fun deleteItem(index :Int){
-        Toast.makeText(this, "item pos $index", Toast.LENGTH_SHORT).show()
+    private fun deleteItem(position :Int){
+        Toast.makeText(this, "item pos $position", Toast.LENGTH_SHORT).show()
+        newArrayList.removeAt(position)
+        newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
+        atualizarTotalGeral()
     }
 
     override fun onRequestPermissionsResult(
@@ -142,5 +161,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun atualizarTotalGeral(){
+        var vvtg : Double = 0.00
+        for (i in newArrayList.indices){
+            vvtg += newArrayList[i].vlrtotal!!
+        }
+        binding.tvTotalgeral.text = formatCurrency(vvtg)
+    }
+
+    private fun formatCurrency(vlrtotal: Double?): CharSequence? {
+        val formatoMoeda = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+        return formatoMoeda.format(vlrtotal)
+    }
 
 }

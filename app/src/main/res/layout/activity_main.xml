@@ -26,14 +26,92 @@
         android:src="@drawable/configuracao_24"
         tools:ignore="MissingConstraints" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_itens"
-        android:layout_width="450px"
-        android:layout_height="600px"
+    <LinearLayout
+        android:layout_width="460px"
+        android:layout_height="700px"
         android:layout_marginTop="25dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"
+        android:background="@drawable/background_blue"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="20dp"
+                android:text="Descrição item\nQtde. X Vlr. Item"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Valor Total"
+                android:textAlignment="viewEnd"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="65dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Excluir?"
+                android:textAlignment="viewEnd"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_itens"
+            android:layout_width="match_parent"
+            android:layout_height="600px"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/background_white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="20dp"
+                android:text="Valor Total:"
+                android:textAlignment="viewEnd"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_totalgeral"
+                android:layout_width="127dp"
+                android:layout_height="22dp"
+                android:text="Valor Total"
+                android:textAlignment="viewEnd"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+    <Button
+        android:id="@+id/btn_teste"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/baseline_catching_pokemon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
