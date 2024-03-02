@@ -26,6 +26,38 @@
         android:src="@drawable/configuracao_24"
         tools:ignore="MissingConstraints" />
 
+    <!-- inicio da exibição dos botoes teclado -->
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="400px"
+        android:layout_height="50px"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/background_blue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/background_white"
+            android:text="123"
+            android:textAlignment="viewEnd"
+            android:textSize="25dp"
+            android:textStyle="bold">
+
+    </LinearLayout>
+
+
+
+    <!-- final da exibição dos botoes teclado -->
+
+    <!-- inicio da exibição dos itens -->
     <LinearLayout
         android:layout_width="460px"
         android:layout_height="700px"
@@ -101,9 +133,7 @@
 
         </LinearLayout>
     </LinearLayout>
-
-
-
+    <!-- final da exibição dos itens -->
     <Button
         android:id="@+id/btn_teste"
         android:layout_width="60dp"
