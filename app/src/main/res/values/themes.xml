@@ -4,6 +4,9 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
+    <style name="EstiloButtonAzul" parent="Widget.AppCompat.Button">
+        <item name="android:background">@color/azullogo</item>
+    </style>
 
     <style name="Theme.PMDCEventos" parent="Base.Theme.PMDCEventos" />
 </resources>
