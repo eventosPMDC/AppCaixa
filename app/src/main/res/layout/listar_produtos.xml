@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginTop="7dp"
+
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/botao_numerico">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_produto"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="@drawable/botao_numerico"
+            android:drawableLeft="@drawable/imagensproduto"
+            android:drawablePadding="2dp"
+            android:text="REFRIGERANTE\n R$ 4,00"
+            android:textSize="21sp"
+            tools:ignore="MissingConstraints" />
+
+        <!--<ImageView
+            android:id="@+id/img_produto"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/latasrefri"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_descvlrprod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="REFRIGERANTE\n R$ 4,00"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/img_produto"
+            app:layout_constraintTop_toTopOf="@+id/img_produto"
+            android:textSize="21sp"/>-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

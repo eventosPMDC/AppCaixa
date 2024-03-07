@@ -3,4 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="azullogo">#48E1F5</color>
+    <color name="cinza">#BDBDBD</color>
+    <color name="cinza_medio">#757575</color>
 </resources>

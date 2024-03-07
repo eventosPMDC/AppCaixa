@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.core.content.PermissionChecker
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
@@ -14,7 +15,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.toObject
 import com.pmdceventos.databinding.ActivityMainBinding
 import java.text.NumberFormat
 import java.util.Locale
@@ -22,6 +28,7 @@ import java.util.Locale
 var serialNnbr: String? = ""
 var numCx: String? = ""
 var vlrTotGeral: Double? = 0.00
+var cxaberto : String? = ""
 
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
 
@@ -29,11 +36,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
     private var db = FirebaseFirestore.getInstance()
+
     private lateinit var newRecyclerView: RecyclerView
     private lateinit var newArrayList: ArrayList<ItensLista>
     lateinit var arrdesc : Array<String>
     lateinit var arrvlit : Array<String>
     lateinit var arrvltt : Array<Double>
+
+    private lateinit var recyclerViewProdutos :RecyclerView
+    private lateinit var produtosArrayList: ArrayList<Produto>
+    private lateinit var produtosAdapter: AdapterProdutos
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +89,8 @@ class MainActivity : AppCompatActivity() {
         binding.btnTeste.setOnClickListener {
             geraDados("CHOPP","3 X 8,00", 24.00)
         }
-
+        setClickButton()
+        carregarProdutos()
     }
 
     private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double) {
@@ -102,6 +115,8 @@ class MainActivity : AppCompatActivity() {
         newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
         atualizarTotalGeral()
     }
+
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -157,7 +172,69 @@ class MainActivity : AppCompatActivity() {
         rqstCaixa.get().addOnSuccessListener {
             if (it != null){
                 numCx = it.data?.get("caixa").toString()
+                cxaberto = it.data?.get("cxaberto").toString()
+                if (cxaberto == "true") {
+                    carregarProdutos()
+                }
             }
+        }
+    }
+
+    private fun carregarProdutos(){
+        recyclerViewProdutos = findViewById(R.id.produtos)
+        recyclerViewProdutos.layoutManager  = LinearLayoutManager(this)
+        recyclerViewProdutos.setHasFixedSize(true)
+        produtosArrayList = arrayListOf()
+        produtosAdapter = AdapterProdutos(produtosArrayList)
+        recyclerViewProdutos.adapter = produtosAdapter
+
+        db = FirebaseFirestore.getInstance()
+        db.collection("Produtos").
+               addSnapshotListener(object : EventListener<QuerySnapshot>{
+                   override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
+
+                       if (error != null){
+                           Log.e("Firestore error", error.message.toString())
+                           return
+                       }
+
+                       for (dc : DocumentChange in value?.documentChanges!!){
+                           if (dc.type == DocumentChange.Type.ADDED) {
+                               try {
+                                   produtosArrayList.add(dc.document.toObject(Produto::class.java))
+                               } catch (e: Exception) {
+                                   Log.e("Erro ao acessar 'valor'", "Exceção ao tentar acessar o campo 'valor': ${e.message}")
+                               }
+                           }
+                       }
+
+                       produtosAdapter.notifyDataSetChanged()
+
+                   }
+
+               })
+
+    }
+
+    private fun setItemOnList(position: Int){
+        var produto = produtosArrayList[position]
+        if(binding.tvdisplay.text != "0"){
+            var qtdvlri = buildString {
+                append(binding.tvdisplay.text)
+                append(" X ")
+                append(formatCurrency(produto.valor))
+            }
+            var vlrunit = binding.tvdisplay.text.toString()
+            var vlrtotal = vlrunit.toDouble()
+            vlrtotal = vlrtotal + produto.valor!!
+            geraDados(produto.nome,qtdvlri,vlrtotal)
+        } else {
+            var qtdvlr = buildString {
+                append("1")
+                append(" X ")
+                append(formatCurrency(produto.valor))
+            }
+            geraDados(produto.nome,qtdvlr,produto.valor!!)
         }
     }
 
@@ -174,4 +251,40 @@ class MainActivity : AppCompatActivity() {
         return formatoMoeda.format(vlrtotal)
     }
 
+    private fun setClickButton(){
+        binding.btn0.setOnClickListener {setTecladoNum(binding.btn0.text.toString())}
+        binding.btn1.setOnClickListener {setTecladoNum(binding.btn1.text.toString())}
+        binding.btn2.setOnClickListener {setTecladoNum(binding.btn2.text.toString())}
+        binding.btn3.setOnClickListener {setTecladoNum(binding.btn3.text.toString())}
+        binding.btn4.setOnClickListener {setTecladoNum(binding.btn4.text.toString())}
+        binding.btn5.setOnClickListener {setTecladoNum(binding.btn5.text.toString())}
+        binding.btn6.setOnClickListener {setTecladoNum(binding.btn6.text.toString())}
+        binding.btn7.setOnClickListener {setTecladoNum(binding.btn7.text.toString())}
+        binding.btn8.setOnClickListener {setTecladoNum(binding.btn8.text.toString())}
+        binding.btn9.setOnClickListener {setTecladoNum(binding.btn9.text.toString())}
+        binding.btnBack.setOnClickListener {setTecladoNum("Voltar")}
+    }
+
+    private fun setTecladoNum(num : String){
+        if (binding.tvdisplay.length() == 1 &&
+            binding.tvdisplay.text == "0" && num != "Voltar"){
+            binding.tvdisplay.text = ""
+            binding.tvdisplay.text = num
+        } else {
+            if (num != "Voltar"){
+                var str :String = binding.tvdisplay.text.toString()
+                str = str.plus(num)
+                binding.tvdisplay.text = str
+            }
+            else {
+                if (num == "Voltar") {
+                    var str :String = binding.tvdisplay.text.toString()
+                    binding.tvdisplay.text = str.toString().dropLast(1)
+                    if (binding.tvdisplay.length() == 0){
+                        binding.tvdisplay.text = "0"
+                    }
+                }
+            }
+        }
+    }
 }
