@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.NumberFormat
 import java.util.Locale
 
-class AdapterProdutos (private val produto: ArrayList<Produto>): RecyclerView.Adapter<AdapterProdutos.AdapterViewHolder>() {
+class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnList: (Int) -> Unit):
+    RecyclerView.Adapter<AdapterProdutos.AdapterViewHolder>() {
 
      override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdapterViewHolder {
         val produtoView = LayoutInflater.from(parent.context).inflate(R.layout.listar_produtos,
@@ -30,7 +31,7 @@ class AdapterProdutos (private val produto: ArrayList<Produto>): RecyclerView.Ad
             append(formatCurrency(valor))
         }
         holder.btbproduto.setCompoundDrawablesWithIntrinsicBounds(getState(currentProduto.nome),0,0,0)
-
+        holder.btbproduto.setOnClickListener { setItemOnList(position) }
     }
 
     private fun getState(nome: String): Int {

@@ -1,46 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MenuFerramentas">
+    android:layout_height="wrap_content"
+    android:background="@color/white">
 
-    <LinearLayout
-        android:id="@+id/acoescaixa"
-        android:layout_width="match_parent"
+
+
+    <!--android:id="@+id/ibtn_abrecx"-->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/ibtn_abrecx"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:orientation="horizontal">
+        android:layout_marginTop="25dp"
+        android:drawableTop="@drawable/abrecaixa"
+        android:text="Abrir caixa"
+        app:layout_constraintEnd_toStartOf="@+id/appCompatButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
-        <ImageButton
-            android:id="@+id/ibtn_abrecx"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="Clique aqui para abrir o Caixa."
-            android:src="@drawable/baseline_catching_pokemon"
-            tools:ignore="TouchTargetSizeCheck" />
+    <!--android:id="@+id/ibtn_fechacx"-->
 
-        <ImageButton
-            android:id="@+id/ibtn_fechacx"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="Clique aqui para fechar o Caixa."
-            android:src="@drawable/baseline_catching_pokemon" />
-    </LinearLayout>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/appCompatButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        android:drawableTop="@drawable/fechacaixa"
+        android:text="Fechar Caixa"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ibtn_abrecx"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/ibtn_configcx"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/acoescaixa"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="30dp"
-        android:layout_weight="1"
-        android:contentDescription="Clique aqui para as configurações do Caixa"
-        android:src="@drawable/baseline_catching_pokemon" />
+        android:layout_below="@+id/ibtn_abrecx"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
+        android:drawableTop="@drawable/config"
+        android:text="Configuração"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/appCompatButton"
+        app:layout_constraintStart_toStartOf="@+id/ibtn_abrecx"
+        app:layout_constraintTop_toBottomOf="@+id/ibtn_abrecx"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="MissingConstraints" />
 
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

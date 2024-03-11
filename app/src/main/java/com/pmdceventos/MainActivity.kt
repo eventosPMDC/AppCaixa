@@ -12,6 +12,8 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,14 +22,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.toObject
 import com.pmdceventos.databinding.ActivityMainBinding
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
-var vlrTotGeral: Double? = 0.00
+var vvtg : Double? = 0.00
 var cxaberto : String? = ""
 
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
@@ -39,9 +42,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var newRecyclerView: RecyclerView
     private lateinit var newArrayList: ArrayList<ItensLista>
-    lateinit var arrdesc : Array<String>
-    lateinit var arrvlit : Array<String>
-    lateinit var arrvltt : Array<Double>
 
     private lateinit var recyclerViewProdutos :RecyclerView
     private lateinit var produtosArrayList: ArrayList<Produto>
@@ -73,38 +73,18 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        arrdesc = arrayOf("REFRIGERANTE","CERVEJA")
-        arrvlit = arrayOf("4 X 4,00", "1 x 6,00")
-        arrvltt = arrayOf(1000.00,6.00)
-
         newRecyclerView = findViewById(R.id.rv_itens)
         newRecyclerView.layoutManager = LinearLayoutManager(this)
         newRecyclerView.setHasFixedSize(true)
         newArrayList = arrayListOf<ItensLista>()
-        getUserData()
-        /*val metrics = resources.displayMetrics
-        val width = metrics.widthPixels
-        val heigth = metrics.heightPixels
-        Toast.makeText(this, "Resolução: $width x $heigth", Toast.LENGTH_SHORT).show()*/
-        binding.btnTeste.setOnClickListener {
-            geraDados("CHOPP","3 X 8,00", 24.00)
-        }
+
         setClickButton()
         carregarProdutos()
     }
 
-    private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double) {
-        val itensLista = ItensLista(descricao,qtdvlri,vlrtt)
+    private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double, vlrunt : Double, qtde: Int) {
+        val itensLista = ItensLista(descricao,qtdvlri,vlrtt,vlrunt,qtde)
         newArrayList.add(itensLista)
-        newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
-        atualizarTotalGeral()
-    }
-
-    private fun getUserData() {
-        for( i in arrdesc.indices){
-            val itensLista = ItensLista(arrdesc[i],arrvlit[i],arrvltt[i])
-            newArrayList.add(itensLista)
-        }
         newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
         atualizarTotalGeral()
     }
@@ -115,8 +95,6 @@ class MainActivity : AppCompatActivity() {
         newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
         atualizarTotalGeral()
     }
-
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -149,12 +127,12 @@ class MainActivity : AppCompatActivity() {
 
     fun showDialog(view: View) {
         if (view.id == R.id.ibtn_config){
-            val alertDialog = AlertDialog.Builder(this)
+            val alertDialog = AlertDialog.Builder(ContextThemeWrapper(this, R.style.RoundedAlertDialog))
             val inflater = layoutInflater
             val viewMF = inflater.inflate(R.layout.activity_menu_ferramentas, null)
             alertDialog.setView(viewMF)
             val dialog = alertDialog.create()
-            val btnCnfcx = viewMF.findViewById<ImageButton>(R.id.ibtn_configcx)
+            val btnCnfcx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_configcx)
             btnCnfcx.setOnClickListener{
                 val intent = Intent(this, ConfigCx::class.java)
                 intent.putExtra("serialNmbr", serialNnbr)
@@ -185,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         recyclerViewProdutos.layoutManager  = LinearLayoutManager(this)
         recyclerViewProdutos.setHasFixedSize(true)
         produtosArrayList = arrayListOf()
-        produtosAdapter = AdapterProdutos(produtosArrayList)
+        produtosAdapter = AdapterProdutos(produtosArrayList){index -> setItemOnList(index)}
         recyclerViewProdutos.adapter = produtosAdapter
 
         db = FirebaseFirestore.getInstance()
@@ -226,22 +204,24 @@ class MainActivity : AppCompatActivity() {
             }
             var vlrunit = binding.tvdisplay.text.toString()
             var vlrtotal = vlrunit.toDouble()
-            vlrtotal = vlrtotal + produto.valor!!
-            geraDados(produto.nome,qtdvlri,vlrtotal)
+            vlrtotal = vlrtotal * produto.valor!!
+            geraDados(produto.nome,qtdvlri,vlrtotal, produto.valor!!,vlrunit.toInt() )
         } else {
             var qtdvlr = buildString {
                 append("1")
                 append(" X ")
                 append(formatCurrency(produto.valor))
             }
-            geraDados(produto.nome,qtdvlr,produto.valor!!)
+            geraDados(produto.nome,qtdvlr,produto.valor!!, produto.valor!!,1)
         }
+        binding.tvdisplay.text = "0"
     }
 
     fun atualizarTotalGeral(){
-        var vvtg : Double = 0.00
+        vvtg = 0.00
+
         for (i in newArrayList.indices){
-            vvtg += newArrayList[i].vlrtotal!!
+            vvtg = vvtg!! + newArrayList[i].vlrtotal!!
         }
         binding.tvTotalgeral.text = formatCurrency(vvtg)
     }
@@ -263,6 +243,9 @@ class MainActivity : AppCompatActivity() {
         binding.btn8.setOnClickListener {setTecladoNum(binding.btn8.text.toString())}
         binding.btn9.setOnClickListener {setTecladoNum(binding.btn9.text.toString())}
         binding.btnBack.setOnClickListener {setTecladoNum("Voltar")}
+        binding.dinheiro.setOnClickListener { finalizaVenda(binding.dinheiro.text.toString())}
+        binding.cartao.setOnClickListener { finalizaVenda(binding.cartao.text.toString())}
+        binding.pix.setOnClickListener { finalizaVenda(binding.pix.text.toString())}
     }
 
     private fun setTecladoNum(num : String){
@@ -287,4 +270,58 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun finalizaVenda(pagamento: String){
+        if (vvtg != 0.00) {
+
+            val calendario = Calendar.getInstance()
+            val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
+            val hora = SimpleDateFormat("HH:mm").format(calendario.time)
+
+            val movCaixa = hashMapOf(
+                "dia" to dia,
+                "hora" to hora,
+                "caixa" to numCx,
+                "cobranca" to pagamento,
+                "vlrTotal" to vvtg)
+
+            if (pagamento == "DINHEIRO") {
+                var troco = binding.tvdisplay.text.toString().toDouble()
+                troco -= vvtg!!
+            }
+
+            val colecaoMovCx = db.collection("MovCaixa")
+
+            colecaoMovCx.add(movCaixa).addOnSuccessListener { docRef ->
+                val novoDocRef = docRef
+                val itemMovCx = novoDocRef.collection("MovCxItem")
+                val i : Int = 1
+                for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde) in newArrayList) {
+                    val movCxItem = hashMapOf(
+                        "secItem" to i,
+                        "Produto" to descricao,
+                        "VlrUnit" to vlrUnit,
+                        "Qtde" to qtde
+                    )
+                    itemMovCx.add(movCxItem)
+                }
+                newArrayList.clear()
+                newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
+                atualizarTotalGeral()
+                var dialogBuild = AlertDialog.Builder(this)
+                dialogBuild.setTitle("Sucesso!")
+                if ()
+                dialogBuild.setMessage("Venda gravada com sucesso!")
+                dialogBuild.setPositiveButton("Ok"){dialog, which -> dialog.dismiss()}
+                val alertDialog = dialogBuild.create()
+                alertDialog.show()
+            }
+                .addOnFailureListener { e ->
+                    val caixaDialogo = CaixaDialogo(this)
+                    caixaDialogo.setMessage("Erro ao tentar gravar item. Erro: ${e.message}")
+                }
+
+        }
+    }
+
 }

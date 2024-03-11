@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -271,14 +272,6 @@
         </LinearLayout>
     </LinearLayout>
     <!-- final da exibição dos itens -->
-    <Button
-        android:id="@+id/btn_teste"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="100dp"
-        android:background="@drawable/baseline_catching_pokemon"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -332,24 +325,23 @@
         android:id="@+id/cartao"
         android:layout_width="wrap_content"
         android:layout_height="75dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginTop="7dp"
+        android:background="@drawable/botao_numerico"
         android:text=" CARTÃO "
         android:textSize="25dp"
-        android:background="@drawable/botao_numerico"
         app:layout_constraintEnd_toStartOf="@+id/pix"
+        app:layout_constraintStart_toEndOf="@+id/dinheiro"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/dinheiro"
         android:layout_width="wrap_content"
         android:layout_height="75dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginTop="7dp"
+        android:background="@drawable/botao_numerico"
         android:text=" DINHEIRO "
         android:textSize="25dp"
-        android:background="@drawable/botao_numerico"
-        app:layout_constraintEnd_toStartOf="@+id/cartao"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
