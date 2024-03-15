@@ -2,7 +2,8 @@ package com.pmdceventos
 
 data class Produto(
     val nome: String,
-    var valor: Double?
+    var valor: Double?,
+    val idProd: String
 ){
-    constructor() : this("",null)
+    constructor() : this("",null,"")
 }

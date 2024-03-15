@@ -4,17 +4,27 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <!--<item name="colorPrimary">@color/cinza</item>-->
-
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/font_color</item>
+        <item name="android:fontFamily">@font/josefin_sans</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:statusBarColor">@color/ini_btn</item>
     </style>
     <style name="EstiloButtonNum" parent="Widget.AppCompat.Button">
-        <item name="android:background">@drawable/botao_numerico</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/botao_num_new</item>
+        <item name="android:textColor">@color/font_color</item>
+        <item name="android:fontFamily">@font/josefin_sans</item>
     </style>
+
+    <style name="EstiloButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/botao_numerico</item>
+        <item name="android:textColor">@color/font_color</item>
+    </style>
+
     <style name="RoundedAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowBackground">@drawable/round_dialog_background</item>
         <item name="android:background">@drawable/round_dialog_background</item>
     </style>
+
 
     <style name="Theme.PMDCEventos" parent="Base.Theme.PMDCEventos" />
 </resources>

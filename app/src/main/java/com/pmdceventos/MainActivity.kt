@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
@@ -32,6 +31,7 @@ var serialNnbr: String? = ""
 var numCx: String? = ""
 var vvtg : Double? = 0.00
 var cxaberto : String? = ""
+var cxidmovcx : String? = ""
 
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
 
@@ -82,8 +82,9 @@ class MainActivity : AppCompatActivity() {
         carregarProdutos()
     }
 
-    private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double, vlrunt : Double, qtde: Int) {
-        val itensLista = ItensLista(descricao,qtdvlri,vlrtt,vlrunt,qtde)
+    private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double,
+                          vlrunt : Double, qtde: Int, idProd: String) {
+        val itensLista = ItensLista(descricao,qtdvlri,vlrtt,vlrunt,qtde, idProd)
         newArrayList.add(itensLista)
         newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
         atualizarTotalGeral()
@@ -152,6 +153,7 @@ class MainActivity : AppCompatActivity() {
                 numCx = it.data?.get("caixa").toString()
                 cxaberto = it.data?.get("cxaberto").toString()
                 if (cxaberto == "true") {
+                    cxidmovcx = it.data?.get("cxidmovcx").toString()
                     carregarProdutos()
                 }
             }
@@ -205,14 +207,14 @@ class MainActivity : AppCompatActivity() {
             var vlrunit = binding.tvdisplay.text.toString()
             var vlrtotal = vlrunit.toDouble()
             vlrtotal = vlrtotal * produto.valor!!
-            geraDados(produto.nome,qtdvlri,vlrtotal, produto.valor!!,vlrunit.toInt() )
+            geraDados(produto.nome,qtdvlri,vlrtotal, produto.valor!!,vlrunit.toInt(), produto.idProd)
         } else {
             var qtdvlr = buildString {
                 append("1")
                 append(" X ")
                 append(formatCurrency(produto.valor))
             }
-            geraDados(produto.nome,qtdvlr,produto.valor!!, produto.valor!!,1)
+            geraDados(produto.nome,qtdvlr,produto.valor!!, produto.valor!!,1, produto.idProd)
         }
         binding.tvdisplay.text = "0"
     }
@@ -276,14 +278,15 @@ class MainActivity : AppCompatActivity() {
 
             val calendario = Calendar.getInstance()
             val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
-            val hora = SimpleDateFormat("HH:mm").format(calendario.time)
+            val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
 
             val movCaixa = hashMapOf(
                 "dia" to dia,
                 "hora" to hora,
                 "caixa" to numCx,
                 "cobranca" to pagamento,
-                "vlrTotal" to vvtg)
+                "vlrTotal" to vvtg,
+                "cxidmovcx" to cxidmovcx)
 
             if (pagamento == "DINHEIRO") {
                 var troco = binding.tvdisplay.text.toString().toDouble()
@@ -296,9 +299,10 @@ class MainActivity : AppCompatActivity() {
                 val novoDocRef = docRef
                 val itemMovCx = novoDocRef.collection("MovCxItem")
                 val i : Int = 1
-                for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde) in newArrayList) {
+                for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd) in newArrayList) {
                     val movCxItem = hashMapOf(
                         "secItem" to i,
+                        "idProd" to idProd,
                         "Produto" to descricao,
                         "VlrUnit" to vlrUnit,
                         "Qtde" to qtde
@@ -310,7 +314,6 @@ class MainActivity : AppCompatActivity() {
                 atualizarTotalGeral()
                 var dialogBuild = AlertDialog.Builder(this)
                 dialogBuild.setTitle("Sucesso!")
-                if ()
                 dialogBuild.setMessage("Venda gravada com sucesso!")
                 dialogBuild.setPositiveButton("Ok"){dialog, which -> dialog.dismiss()}
                 val alertDialog = dialogBuild.create()
@@ -320,6 +323,26 @@ class MainActivity : AppCompatActivity() {
                     val caixaDialogo = CaixaDialogo(this)
                     caixaDialogo.setMessage("Erro ao tentar gravar item. Erro: ${e.message}")
                 }
+
+        }
+    }
+
+    private fun abrirCaixa() {
+        val calendario = Calendar.getInstance()
+        val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
+        val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
+        val abreCx = hashMapOf(
+            "caixa" to numCx,
+            "cobranca" to "ABERTURA DE CAIXA",
+            "dia" to dia,
+            "hora" to hora,
+            "cxidmovcx" to cxidmovcx
+        )
+        db.collection("MovCaixa").add(abreCx).addOnSuccessListener {
+            val rqstCaixa = db.collection("Config").document(serialNnbr.toString())
+            rqstCaixa.get().addOnSuccessListener {
+            }
+        }.addOnFailureListener {
 
         }
     }

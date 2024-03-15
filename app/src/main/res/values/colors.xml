@@ -5,4 +5,8 @@
     <color name="azullogo">#48E1F5</color>
     <color name="cinza">#BDBDBD</color>
     <color name="cinza_medio">#757575</color>
+    <color name="cinza_fundo">#404142</color>
+    <color name="font_color">#A1A1A0</color>
+    <color name="ini_btn">#26272b</color>
+    <color name="fin_btn">#34393f</color>
 </resources>

@@ -25,6 +25,7 @@ class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnLis
         val currentProduto = produto[position]
         val nome = currentProduto.nome
         val valor = currentProduto.valor
+        val idProd = currentProduto.idProd
         holder.btbproduto.text = buildString {
             append(nome)
             append("\n")

@@ -9,6 +9,7 @@ import com.pmdceventos.databinding.ActivityConfigCxBinding
 class ConfigCx : AppCompatActivity() {
     private lateinit var binding : ActivityConfigCxBinding
     private var db = FirebaseFirestore.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityConfigCxBinding.inflate(layoutInflater)
@@ -20,7 +21,7 @@ class ConfigCx : AppCompatActivity() {
             val caixa    = binding.edtCaixa.text.toString()
 
             if (caixa.isEmpty()){
-                Toast.makeText(this, "O valor do caixa não foi informado!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "O caixa não foi informado!", Toast.LENGTH_SHORT).show()
             } else {
                 gravarConfig(chvunica,caixa)
             }
@@ -32,14 +33,26 @@ class ConfigCx : AppCompatActivity() {
             "configId" to chaveunica,
             "caixa" to caixan)
 
-        db.collection("Config").document(chaveunica).set(mpConfigcx).addOnCompleteListener {
-            gravacao ->
-            if (gravacao.isSuccessful){
-                Toast.makeText(this, "Dados gravados!", Toast.LENGTH_SHORT).show()
-                finish()
+        if (intent.getStringExtra("caixa") == "") {
+            db.collection("Config").document(chaveunica).set(mpConfigcx)
+                .addOnCompleteListener { gravacao ->
+                    if (gravacao.isSuccessful) {
+                        Toast.makeText(this, "Dados gravados!", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                }.addOnFailureListener {
+                Toast.makeText(this, "Houve um erro na gravação", Toast.LENGTH_SHORT).show()
             }
-        }.addOnFailureListener{
-            Toast.makeText(this, "Houve um erro na gravação", Toast.LENGTH_SHORT).show()
+        }else{
+            db.collection("Config").document(chaveunica).update(mpConfigcx as Map<String, Any>)
+                .addOnCompleteListener { gravacao ->
+                    if (gravacao.isSuccessful) {
+                        Toast.makeText(this, "Dados gravados!", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                }.addOnFailureListener {
+                    Toast.makeText(this, "Houve um erro na gravação", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 }
