@@ -21,17 +21,21 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.pmdceventos.databinding.ActivityMainBinding
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
 var vvtg : Double? = 0.00
 var cxaberto : String? = ""
 var cxidmovcx : String? = ""
+var emFinalizacao : Boolean? = false
+var uuidMC : String? = ""
 
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
 
@@ -79,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         newArrayList = arrayListOf<ItensLista>()
 
         setClickButton()
-        carregarProdutos()
+        //carregarProdutos()
     }
 
     private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double,
@@ -143,6 +147,8 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 dialog.dismiss()
             }
+            val ibtnAbrirCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_abrecx)
+            ibtnAbrirCx.setOnClickListener { abrirCaixa() }
             dialog.show()
         }
     }
@@ -197,6 +203,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setItemOnList(position: Int){
+        if (emFinalizacao == true){
+            return
+        }
         var produto = produtosArrayList[position]
         if(binding.tvdisplay.text != "0"){
             var qtdvlri = buildString {
@@ -273,77 +282,141 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun finalizaVenda(pagamento: String){
+    private fun finalizaVenda(pagamento: String) {
         if (vvtg != 0.00) {
+            if (emFinalizacao == false) {
+                val calendario = Calendar.getInstance()
+                val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
+                val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
 
-            val calendario = Calendar.getInstance()
-            val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
-            val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
+                val movCaixa = hashMapOf(
+                    "dia" to dia,
+                    "hora" to hora,
+                    "caixa" to numCx,
+                    "cobranca" to pagamento,
+                    "vlrTotal" to vvtg,
+                    "cxidmovcx" to cxidmovcx
+                )
 
-            val movCaixa = hashMapOf(
-                "dia" to dia,
-                "hora" to hora,
-                "caixa" to numCx,
+                val colecaoMovCx = db.collection("MovCaixa")
+                uuidMC = UUID.randomUUID().toString()
+                colecaoMovCx.document(uuidMC!!).set(movCaixa)
+
+                emFinalizacao = true
+            }
+            var vlrPago : Double = 0.00
+            if (binding.tvdisplay.text.toString().toDouble() < vvtg!! && binding.tvdisplay.text.toString().toDouble() != 0.00){
+                vlrPago = binding.tvdisplay.text.toString().toDouble()
+                vvtg = vvtg!! - binding.tvdisplay.text.toString().toDouble()
+            } else{
+                vlrPago = vvtg!!
+                vvtg = 0.00
+            }
+
+            val movCxPgto = db.collection("MovCxPagto")
+            val movCxPgtoData = hashMapOf(
+                "codMovCx" to uuidMC,
                 "cobranca" to pagamento,
-                "vlrTotal" to vvtg,
-                "cxidmovcx" to cxidmovcx)
-
-            if (pagamento == "DINHEIRO") {
-                var troco = binding.tvdisplay.text.toString().toDouble()
+                "vlrPago" to vlrPago
+            )
+            movCxPgto.add(movCxPgtoData)
+            if (vvtg!! != 0.00){
+                binding.tvTotalgeral.text = formatCurrency(vvtg)
+                binding.tvdisplay.text = "0"
+                return
+            }
+            var troco : Double = binding.tvdisplay.text.toString().toDouble()
+            if (pagamento == "DINHEIRO" && troco > vlrPago) {
+                troco = binding.tvdisplay.text.toString().toDouble()
                 troco -= vvtg!!
             }
 
-            val colecaoMovCx = db.collection("MovCaixa")
-
-            colecaoMovCx.add(movCaixa).addOnSuccessListener { docRef ->
-                val novoDocRef = docRef
-                val itemMovCx = novoDocRef.collection("MovCxItem")
-                val i : Int = 1
-                for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd) in newArrayList) {
-                    val movCxItem = hashMapOf(
+            val movCxItem = db.collection("MovCxItem")
+            val i : Int =1
+            for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd) in newArrayList) {
+                val movCxItemData = hashMapOf(
+                        "codMovCx" to uuidMC,
                         "secItem" to i,
                         "idProd" to idProd,
                         "Produto" to descricao,
                         "VlrUnit" to vlrUnit,
                         "Qtde" to qtde
                     )
-                    itemMovCx.add(movCxItem)
+                movCxItem.add(movCxItemData)
                 }
-                newArrayList.clear()
-                newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
-                atualizarTotalGeral()
-                var dialogBuild = AlertDialog.Builder(this)
-                dialogBuild.setTitle("Sucesso!")
+            newArrayList.clear()
+            newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
+            atualizarTotalGeral()
+            var dialogBuild = AlertDialog.Builder(this)
+            emFinalizacao = false
+            binding.tvdisplay.text = "0"
+            dialogBuild.setTitle("Sucesso!")
+            if (troco == 0.00) {
                 dialogBuild.setMessage("Venda gravada com sucesso!")
-                dialogBuild.setPositiveButton("Ok"){dialog, which -> dialog.dismiss()}
-                val alertDialog = dialogBuild.create()
-                alertDialog.show()
+            } else {
+                dialogBuild.setMessage("Venda gravada com sucesso!\n Troco de ${formatCurrency(troco)}")
             }
-                .addOnFailureListener { e ->
-                    val caixaDialogo = CaixaDialogo(this)
-                    caixaDialogo.setMessage("Erro ao tentar gravar item. Erro: ${e.message}")
-                }
+            dialogBuild.setPositiveButton("Ok"){ dialog, _ -> dialog.dismiss()}
+            val alertDialog = dialogBuild.create()
+            alertDialog.show()
+
+
+//            colecaoMovCx.document(uuid.toString()).set(movCaixa).addOnSuccessListener { docRef ->
+//                val novoDocRef = docRef
+//                val itemMovCx = novoDocRef.collection("MovCxItem")
+//                val i : Int = 1
+//                for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd) in newArrayList) {
+//                    val movCxItem = hashMapOf(
+//                        "secItem" to i,
+//                        "idProd" to idProd,
+//                        "Produto" to descricao,
+//                        "VlrUnit" to vlrUnit,
+//                        "Qtde" to qtde
+//                    )
+//                    itemMovCx.add(movCxItem)
+//                }
+//                newArrayList.clear()
+//                newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
+//                atualizarTotalGeral()
+//                var dialogBuild = AlertDialog.Builder(this)
+//                dialogBuild.setTitle("Sucesso!")
+//                dialogBuild.setMessage("Venda gravada com sucesso!")
+//                dialogBuild.setPositiveButton("Ok"){dialog, which -> dialog.dismiss()}
+//                val alertDialog = dialogBuild.create()
+//                alertDialog.show()
+//            }
+//                .addOnFailureListener { e ->
+//                    val caixaDialogo = CaixaDialogo(this)
+//                    caixaDialogo.setMessage("Erro ao tentar gravar item. Erro: ${e.message}")
+//                    caixaDialogo.show()
+//                }
 
         }
     }
 
     private fun abrirCaixa() {
-        val calendario = Calendar.getInstance()
-        val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
-        val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
-        val abreCx = hashMapOf(
-            "caixa" to numCx,
-            "cobranca" to "ABERTURA DE CAIXA",
-            "dia" to dia,
-            "hora" to hora,
-            "cxidmovcx" to cxidmovcx
-        )
-        db.collection("MovCaixa").add(abreCx).addOnSuccessListener {
+        if (cxaberto != "true") {
+            val calendario = Calendar.getInstance()
+            val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
+            val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
+            cxidmovcx = numCx + dia
+            val abreCx = hashMapOf(
+                "caixa" to numCx,
+                "cobranca" to "ABERTURA DE CAIXA",
+                "dia" to dia,
+                "hora" to hora,
+                "cxidmovcx" to cxidmovcx
+            )
+            db.collection("MovCaixa").add(abreCx)
             val rqstCaixa = db.collection("Config").document(serialNnbr.toString())
-            rqstCaixa.get().addOnSuccessListener {
-            }
-        }.addOnFailureListener {
-
+            rqstCaixa.get()
+            cxaberto = "true"
+            val config = hashMapOf(
+                "cxidmovcx" to cxidmovcx,
+                "cxaberto" to cxaberto
+            )
+            rqstCaixa.update(config as Map<String, Any>)
+            carregarProdutos()
         }
     }
 
