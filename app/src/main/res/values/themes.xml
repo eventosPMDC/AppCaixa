@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools" xmlns:name="http://schemas.android.com/apk/res-auto">
+<resources xmlns:name="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.PMDCEventos" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
@@ -7,10 +7,11 @@
         <item name="android:textColor">@color/font_color</item>
         <item name="android:fontFamily">@font/josefin_sans</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:statusBarColor">@color/ini_btn</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
     <style name="EstiloButtonNum" parent="Widget.AppCompat.Button">
-        <item name="android:background">@drawable/botao_num_new</item>
+        <item name="android:background">@drawable/botao_numerico</item>
         <item name="android:textColor">@color/font_color</item>
         <item name="android:fontFamily">@font/josefin_sans</item>
     </style>
@@ -18,6 +19,7 @@
     <style name="EstiloButton" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/botao_numerico</item>
         <item name="android:textColor">@color/font_color</item>
+        <item name="android:elevation">100dp</item>
     </style>
 
     <style name="RoundedAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
@@ -25,6 +27,12 @@
         <item name="android:background">@drawable/round_dialog_background</item>
     </style>
 
+    <style name="Theme.PMDCEventos" parent="Base.Theme.PMDCEventos"/>
 
-    <style name="Theme.PMDCEventos" parent="Base.Theme.PMDCEventos" />
-</resources>
+    <style name="Theme.App.SlpashScreen" parent="Theme.PMDCEventos">
+        <item name="android:windowSplashScreenBackground">@drawable/fundo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/festa_icon</item>-->
+        <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.PMDCEventos</item>
+    </style>
+ </resources>

@@ -9,4 +9,5 @@
     <color name="font_color">#A1A1A0</color>
     <color name="ini_btn">#26272b</color>
     <color name="fin_btn">#34393f</color>
+    <color name="cinza_sombra">#2E2F33</color>
 </resources>

@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.DocumentChange
@@ -21,19 +22,24 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.pmdceventos.databinding.ActivityMainBinding
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
+import kotlin.concurrent.thread
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
 var vvtg : Double? = 0.00
 var cxaberto : String? = ""
-var cxidmovcx : String? = ""
+var cxDtAbMov : String? = ""
+var cxHrAbMov : String? = ""
 var emFinalizacao : Boolean? = false
 var uuidMC : String? = ""
 
@@ -53,8 +59,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Thread.sleep(3000)
+        installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         val hasPermission = PermissionChecker.checkSelfPermission(
             this,
@@ -64,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {
             // TP1A.220624.014
             serialNnbr = Build.ID
-            getCaixa(Build.ID)
+            getCaixa(serialNnbr)
         } else {
             // Solicitar a permissão ao usuário
             //requestPermissions(arrayOf(permission.READ_PHONE_STATE),0)
@@ -159,8 +168,19 @@ class MainActivity : AppCompatActivity() {
                 numCx = it.data?.get("caixa").toString()
                 cxaberto = it.data?.get("cxaberto").toString()
                 if (cxaberto == "true") {
-                    cxidmovcx = it.data?.get("cxidmovcx").toString()
-                    carregarProdutos()
+                    cxDtAbMov = it.data?.get("cxDtAbMov").toString()
+                    cxHrAbMov = it.data?.get("cxHrAbMov").toString()
+                    if (validaCxMov(cxDtAbMov.toString(), cxHrAbMov.toString())) {
+                        carregarProdutos()
+                    } else {
+                        cxaberto = "false"
+                        val dialogBuild = AlertDialog.Builder(this)
+                        dialogBuild.setTitle("Sucesso!")
+                        dialogBuild.setMessage("O caixa do dia $cxDtAbMov se encontra aberto!/n É necessário fecha-lo e abrir na data de hoje!")
+                        dialogBuild.setPositiveButton("Ok"){ dialog, _ -> dialog.dismiss()}
+                        val alertDialog = dialogBuild.create()
+                        alertDialog.show()
+                    }
                 }
             }
         }
@@ -206,19 +226,19 @@ class MainActivity : AppCompatActivity() {
         if (emFinalizacao == true){
             return
         }
-        var produto = produtosArrayList[position]
+        val produto = produtosArrayList[position]
         if(binding.tvdisplay.text != "0"){
-            var qtdvlri = buildString {
+            val qtdvlri = buildString {
                 append(binding.tvdisplay.text)
                 append(" X ")
                 append(formatCurrency(produto.valor))
             }
-            var vlrunit = binding.tvdisplay.text.toString()
+            val vlrunit = binding.tvdisplay.text.toString()
             var vlrtotal = vlrunit.toDouble()
-            vlrtotal = vlrtotal * produto.valor!!
+            vlrtotal *= produto.valor!!
             geraDados(produto.nome,qtdvlri,vlrtotal, produto.valor!!,vlrunit.toInt(), produto.idProd)
         } else {
-            var qtdvlr = buildString {
+            val qtdvlr = buildString {
                 append("1")
                 append(" X ")
                 append(formatCurrency(produto.valor))
@@ -228,7 +248,7 @@ class MainActivity : AppCompatActivity() {
         binding.tvdisplay.text = "0"
     }
 
-    fun atualizarTotalGeral(){
+    private fun atualizarTotalGeral(){
         vvtg = 0.00
 
         for (i in newArrayList.indices){
@@ -270,15 +290,14 @@ class MainActivity : AppCompatActivity() {
                 str = str.plus(num)
                 binding.tvdisplay.text = str
             }
-            else {
-                if (num == "Voltar") {
-                    var str :String = binding.tvdisplay.text.toString()
+            else if (num == "Voltar") {
+                    val str :String = binding.tvdisplay.text.toString()
                     binding.tvdisplay.text = str.toString().dropLast(1)
                     if (binding.tvdisplay.length() == 0){
                         binding.tvdisplay.text = "0"
                     }
                 }
-            }
+
         }
     }
 
@@ -294,13 +313,14 @@ class MainActivity : AppCompatActivity() {
                     "hora" to hora,
                     "caixa" to numCx,
                     "cobranca" to pagamento,
-                    "vlrTotal" to vvtg,
-                    "cxidmovcx" to cxidmovcx
+                    "vlrTotal" to vvtg
                 )
 
-                val colecaoMovCx = db.collection("MovCaixa")
+                //val colecaoMovCx = db.collection("MovCaixa")
+                val colecaoMovCx = db.collection(numCx!!)
                 uuidMC = UUID.randomUUID().toString()
-                colecaoMovCx.document(uuidMC!!).set(movCaixa)
+                //colecaoMovCx.document(uuidMC!!).set(movCaixa)
+                colecaoMovCx.document(cxDtAbMov!!).collection("MovCaixa").document(uuidMC!!).set(movCaixa)
 
                 emFinalizacao = true
             }
@@ -313,13 +333,14 @@ class MainActivity : AppCompatActivity() {
                 vvtg = 0.00
             }
 
-            val movCxPgto = db.collection("MovCxPagto")
+            //val movCxPgto = db.collection("MovCxPagto")
+            val movCxPgto = db.collection(numCx!!)
             val movCxPgtoData = hashMapOf(
                 "codMovCx" to uuidMC,
                 "cobranca" to pagamento,
                 "vlrPago" to vlrPago
             )
-            movCxPgto.add(movCxPgtoData)
+            movCxPgto.document(cxDtAbMov!!).collection("MovCxPagto").add(movCxPgtoData)
             if (vvtg!! != 0.00){
                 binding.tvTotalgeral.text = formatCurrency(vvtg)
                 binding.tvdisplay.text = "0"
@@ -331,7 +352,8 @@ class MainActivity : AppCompatActivity() {
                 troco -= vvtg!!
             }
 
-            val movCxItem = db.collection("MovCxItem")
+            //val movCxItem = db.collection("MovCxItem")
+            val movCxItem = db.collection(numCx!!)
             val i : Int =1
             for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd) in newArrayList) {
                 val movCxItemData = hashMapOf(
@@ -342,12 +364,12 @@ class MainActivity : AppCompatActivity() {
                         "VlrUnit" to vlrUnit,
                         "Qtde" to qtde
                     )
-                movCxItem.add(movCxItemData)
+                movCxItem.document(cxDtAbMov!!).collection("MovCxItem").add(movCxItemData)
                 }
             newArrayList.clear()
             newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
             atualizarTotalGeral()
-            var dialogBuild = AlertDialog.Builder(this)
+            val dialogBuild = AlertDialog.Builder(this)
             emFinalizacao = false
             binding.tvdisplay.text = "0"
             dialogBuild.setTitle("Sucesso!")
@@ -359,65 +381,53 @@ class MainActivity : AppCompatActivity() {
             dialogBuild.setPositiveButton("Ok"){ dialog, _ -> dialog.dismiss()}
             val alertDialog = dialogBuild.create()
             alertDialog.show()
-
-
-//            colecaoMovCx.document(uuid.toString()).set(movCaixa).addOnSuccessListener { docRef ->
-//                val novoDocRef = docRef
-//                val itemMovCx = novoDocRef.collection("MovCxItem")
-//                val i : Int = 1
-//                for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd) in newArrayList) {
-//                    val movCxItem = hashMapOf(
-//                        "secItem" to i,
-//                        "idProd" to idProd,
-//                        "Produto" to descricao,
-//                        "VlrUnit" to vlrUnit,
-//                        "Qtde" to qtde
-//                    )
-//                    itemMovCx.add(movCxItem)
-//                }
-//                newArrayList.clear()
-//                newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
-//                atualizarTotalGeral()
-//                var dialogBuild = AlertDialog.Builder(this)
-//                dialogBuild.setTitle("Sucesso!")
-//                dialogBuild.setMessage("Venda gravada com sucesso!")
-//                dialogBuild.setPositiveButton("Ok"){dialog, which -> dialog.dismiss()}
-//                val alertDialog = dialogBuild.create()
-//                alertDialog.show()
-//            }
-//                .addOnFailureListener { e ->
-//                    val caixaDialogo = CaixaDialogo(this)
-//                    caixaDialogo.setMessage("Erro ao tentar gravar item. Erro: ${e.message}")
-//                    caixaDialogo.show()
-//                }
-
         }
     }
 
     private fun abrirCaixa() {
         if (cxaberto != "true") {
             val calendario = Calendar.getInstance()
-            val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
-            val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
-            cxidmovcx = numCx + dia
+            cxDtAbMov = SimpleDateFormat("dd-MM-yyyy").format(calendario.time)
+            cxHrAbMov = SimpleDateFormat("HH:mm:ss").format(calendario.time)
             val abreCx = hashMapOf(
                 "caixa" to numCx,
                 "cobranca" to "ABERTURA DE CAIXA",
-                "dia" to dia,
-                "hora" to hora,
-                "cxidmovcx" to cxidmovcx
+                "dia" to cxDtAbMov,
+                "hora" to cxHrAbMov
             )
-            db.collection("MovCaixa").add(abreCx)
+            db.collection(numCx!!).document(cxDtAbMov!!).collection("MovCaixa").add(abreCx)
             val rqstCaixa = db.collection("Config").document(serialNnbr.toString())
             rqstCaixa.get()
             cxaberto = "true"
             val config = hashMapOf(
-                "cxidmovcx" to cxidmovcx,
+                "cxDtAbMov" to cxDtAbMov,
+                "cxHrAbMov" to cxHrAbMov,
                 "cxaberto" to cxaberto
             )
-            rqstCaixa.update(config as Map<String, Any>)
+            rqstCaixa.update(config as Map<String, String?>)
             carregarProdutos()
         }
+    }
+
+    private fun validaCxMov(dia: String, hora : String): Boolean {
+        var resultado : Boolean = false
+        if (dia !=  "null" && hora != "null") {
+            val calendario = Calendar.getInstance()
+            var diahorastr = SimpleDateFormat("dd-MM-yyyy").format(calendario.time)
+            diahorastr += " " + SimpleDateFormat("HH:mm:ss").format(calendario.time)
+            val dhUltMovstr = dia + " " + hora
+
+            val formato = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
+            val diahora = LocalDateTime.parse(diahorastr, formato)
+            val dhUltMov = LocalDateTime.parse(dhUltMovstr, formato)
+
+            val diferencaHoras = ChronoUnit.HOURS.between(dhUltMov, diahora)
+
+            if (diferencaHoras <= 4) {
+                resultado = true
+            }
+        }
+        return resultado
     }
 
 }
