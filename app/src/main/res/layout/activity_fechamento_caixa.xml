@@ -6,41 +6,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".fechamento_caixa"
+    tools:context=".FechamentoCaixa"
     android:background="@color/cinza_fundo">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewVendas"
+        android:id="@+id/recicleViewVendas"
         android:layout_width="400dp"
         android:layout_height="match_parent"
         android:layout_marginStart="25dp"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="130dp"
         app:layout_constraintBottom_toTopOf="@+id/confirm_fechamento"
-        app:layout_constraintEnd_toStartOf="@+id/recyclerViewCobrancas"
+        app:layout_constraintEnd_toStartOf="@+id/listViewCobrancas"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCobrancas"
+
+    <ListView
+        android:id="@+id/listViewCobrancas"
         android:layout_width="350dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="25dp"
-        android:layout_marginBottom="130dp"
-        app:layout_constraintBottom_toTopOf="@+id/confirm_fechamento"
+        android:layout_marginBottom="25dp"
+        app:layout_constraintBottom_toBottomOf="@id/cancel_fechamento"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/recyclerViewVendas"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/recicleViewVendas"
+        app:layout_constraintTop_toTopOf="@+id/recicleViewVendas" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/confirm_fechamento"
-        android:layout_width="260dp"
-        android:layout_height="76dp"
+        android:layout_width="160dp"
+        android:layout_height="75dp"
         android:layout_marginBottom="25dp"
         android:background="@drawable/botao_numerico"
         android:text="OK"
-        android:textSize="45sp"
+        android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cancel_fechamento"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,11 +49,11 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/cancel_fechamento"
-        android:layout_width="260dp"
-        android:layout_height="76dp"
+        android:layout_width="160dp"
+        android:layout_height="75dp"
         android:layout_marginBottom="25dp"
         android:text="Cancelar"
-        android:textSize="45sp"
+        android:textSize="25sp"
         android:background="@drawable/botao_numerico"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

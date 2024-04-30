@@ -1,12 +1,12 @@
 package com.pmdceventos
 
 import android.Manifest.permission
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.PermissionChecker
 import android.content.pm.PackageManager
-import android.os.Build
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -26,13 +26,11 @@ import com.pmdceventos.databinding.ActivityMainBinding
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
-import kotlin.concurrent.thread
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
@@ -65,14 +63,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
+
         val hasPermission = PermissionChecker.checkSelfPermission(
             this,
             permission.READ_PHONE_STATE
         )
 
+        serialNnbr = getConfgApp(this,"appEventos")
+
+        if(serialNnbr == null){
+            serialNnbr = UUID.randomUUID().toString()
+            setConfgApp(this,"appEventos", serialNnbr!!)
+            Toast.makeText(
+                this,
+                "Não houve configuração de caixa ainda, por favor fazer a configuração para utilizar o sistema.$serialNnbr",
+                Toast.LENGTH_LONG).show()
+        } else getCaixa(serialNnbr)
+
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {
-            // TP1A.220624.014
-            serialNnbr = Build.ID
             getCaixa(serialNnbr)
         } else {
             // Solicitar a permissão ao usuário
@@ -93,6 +101,18 @@ class MainActivity : AppCompatActivity() {
 
         setClickButton()
         //carregarProdutos()
+    }
+
+    private fun setConfgApp(context: Context, chave: String, valor: String){
+        val shrPreferences = context.getSharedPreferences("ConfigAppPMDC",Context.MODE_PRIVATE)
+        val editor = shrPreferences.edit()
+        editor.putString(chave,valor)
+        editor.apply()
+    }
+
+    private fun getConfgApp(context: Context, chave: String): String? {
+        val srdPreferences = context.getSharedPreferences("ConfigAppPMDC",Context.MODE_PRIVATE)
+        return srdPreferences.getString(chave,null)
     }
 
     private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double,
@@ -121,11 +141,7 @@ class MainActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // A permissão foi concedida
                 // Capturar o número de série
-                serialNnbr = Build.ID
-                Toast.makeText(
-                    this,
-                    "Não houve configuração de caixa ainda, por favor fazer a configuração para utilizar o sistema.$serialNnbr",
-                    Toast.LENGTH_LONG).show()
+
                 getCaixa(serialNnbr)
             } else {
                 // A permissão foi negada
@@ -147,17 +163,30 @@ class MainActivity : AppCompatActivity() {
             alertDialog.setView(viewMF)
             val dialog = alertDialog.create()
             val btnCnfcx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_configcx)
+            val btnFchCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_fechacx)
             btnCnfcx.setOnClickListener{
                 val intent = Intent(this, ConfigCx::class.java)
                 intent.putExtra("serialNmbr", serialNnbr)
-                if (numCx != "") {
+                if (numCx != "" && numCx != "null") {
                     intent.putExtra("caixa", numCx)
-                }
+                } else intent.putExtra("caixa","")
                 startActivity(intent)
+                getCaixa(serialNnbr)
                 dialog.dismiss()
             }
             val ibtnAbrirCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_abrecx)
             ibtnAbrirCx.setOnClickListener { abrirCaixa() }
+            btnFchCx.setOnClickListener {
+                if (cxaberto == "fechar") {
+                    val intent = Intent(this, FechamentoCaixa::class.java)
+                    intent.putExtra("serialNmbr", serialNnbr)
+                    intent.putExtra("dataCX", cxDtAbMov)
+                    intent.putExtra("caixa", numCx)
+                    startActivity(intent)
+                    getCaixa(serialNnbr)
+                    dialog.dismiss()
+                }
+            }
             dialog.show()
         }
     }
@@ -173,10 +202,10 @@ class MainActivity : AppCompatActivity() {
                     if (validaCxMov(cxDtAbMov.toString(), cxHrAbMov.toString())) {
                         carregarProdutos()
                     } else {
-                        cxaberto = "false"
+                        cxaberto = "fechar"
                         val dialogBuild = AlertDialog.Builder(this)
                         dialogBuild.setTitle("Sucesso!")
-                        dialogBuild.setMessage("O caixa do dia $cxDtAbMov se encontra aberto!/n É necessário fecha-lo e abrir na data de hoje!")
+                        dialogBuild.setMessage("O caixa do dia $cxDtAbMov se encontra aberto!\n É necessário fecha-lo e abrir na data de hoje!")
                         dialogBuild.setPositiveButton("Ok"){ dialog, _ -> dialog.dismiss()}
                         val alertDialog = dialogBuild.create()
                         alertDialog.show()

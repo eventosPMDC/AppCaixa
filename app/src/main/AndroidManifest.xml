@@ -15,7 +15,7 @@
         android:theme="@style/Theme.PMDCEventos"
         tools:targetApi="31">
         <activity
-            android:name=".fechamento_caixa"
+            android:name=".FechamentoCaixa"
             android:exported="false"
             android:theme="@style/Theme.PMDCEventos" />
         <activity

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="10dp"
+    app:cardUseCompatPadding="true"
+    android:layout_marginHorizontal="5dp"
+    app:cardElevation="8dp"
+    android:backgroundTint="@android:color/transparent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/botaonum_estilo">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contraintLayoutLV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+
+            <ImageView
+                android:id="@+id/imgExpand"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/baseline_expand_more_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvDataHora"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Data/Hora: 30/04/2024 - 09:45:24"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imgExpand"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTtlCobra"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Total: R$ 100,00 - DINHEIRO"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imgExpand" />
+            
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        
+        <TextView
+            android:id="@+id/tvDetalhesVenda"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="REFRIGERANTE 2 X R$ 8,00  =  R$   16,00\nREFRIGERANTE 2 X R$ 8,00  =  R$   16,00"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contraintLayout"
+            android:textAlignment="textEnd"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

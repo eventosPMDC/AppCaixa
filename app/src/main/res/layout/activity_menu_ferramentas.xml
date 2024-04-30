@@ -18,7 +18,7 @@
         android:layout_marginTop="25dp"
         android:drawableTop="@drawable/abrecaixa"
         android:text="Abrir caixa"
-        app:layout_constraintEnd_toStartOf="@+id/appCompatButton"
+        app:layout_constraintEnd_toStartOf="@+id/ibtn_fechacx"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
@@ -26,7 +26,7 @@
     <!--android:id="@+id/ibtn_fechacx"-->
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/appCompatButton"
+        android:id="@+id/ibtn_fechacx"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
@@ -48,7 +48,7 @@
         android:drawableTop="@drawable/config"
         android:text="Configuração"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/appCompatButton"
+        app:layout_constraintEnd_toEndOf="@+id/ibtn_fechacx"
         app:layout_constraintStart_toStartOf="@+id/ibtn_abrecx"
         app:layout_constraintTop_toBottomOf="@+id/ibtn_abrecx"
         app:layout_constraintVertical_bias="1.0"
