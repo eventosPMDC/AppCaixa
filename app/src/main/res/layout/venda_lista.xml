@@ -57,18 +57,66 @@
                 app:layout_constraintStart_toEndOf="@+id/imgExpand" />
             
         </androidx.constraintlayout.widget.ConstraintLayout>
-        
-        <TextView
-            android:id="@+id/tvDetalhesVenda"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clListaItens"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="REFRIGERANTE 2 X R$ 8,00  =  R$   16,00\nREFRIGERANTE 2 X R$ 8,00  =  R$   16,00"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/contraintLayoutLV"
-            android:textAlignment="textEnd"/>
+            android:orientation="horizontal"
+            android:padding="2dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/contraintLayoutLV"
+            app:layout_constraintStart_toStartOf="@+id/contraintLayoutLV"
+            app:layout_constraintTop_toBottomOf="@+id/contraintLayoutLV" >
+
+            <TextView
+                android:id="@+id/tvProduto"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:text="WWWWWWWWWWWWWWWWWWWW"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvQtd"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvQtd"
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="3dp"
+                android:text="100 x R$"
+                android:textAlignment="textEnd"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvVlrUnt"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvVlrUnt"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="3dp"
+                android:text="1.000,00 = "
+                android:textAlignment="textEnd"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvVlrTot"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvVlrTot"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="3dp"
+                android:text="1.000,00"
+                android:textAlignment="textEnd"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

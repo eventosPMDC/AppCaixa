@@ -37,6 +37,7 @@ var numCx: String? = ""
 var vvtg : Double? = 0.00
 var cxaberto : String? = ""
 var cxDtAbMov : String? = ""
+var cxDtAbMovCh : String? = ""
 var cxHrAbMov : String? = ""
 var emFinalizacao : Boolean? = false
 var uuidMC : String? = ""
@@ -177,10 +178,10 @@ class MainActivity : AppCompatActivity() {
             val ibtnAbrirCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_abrecx)
             ibtnAbrirCx.setOnClickListener { abrirCaixa() }
             btnFchCx.setOnClickListener {
-                if (cxaberto == "fechar") {
+                if (cxaberto == "fechar" || cxaberto == "true") {
                     val intent = Intent(this, FechamentoCaixa::class.java)
                     intent.putExtra("serialNmbr", serialNnbr)
-                    intent.putExtra("dataCX", cxDtAbMov)
+                    intent.putExtra("dataCX", cxDtAbMovCh)
                     intent.putExtra("caixa", numCx)
                     startActivity(intent)
                     getCaixa(serialNnbr)
@@ -198,6 +199,7 @@ class MainActivity : AppCompatActivity() {
                 cxaberto = it.data?.get("cxaberto").toString()
                 if (cxaberto == "true") {
                     cxDtAbMov = it.data?.get("cxDtAbMov").toString()
+                    cxDtAbMovCh = cxDtAbMov!!.replace("/","-")
                     cxHrAbMov = it.data?.get("cxHrAbMov").toString()
                     if (validaCxMov(cxDtAbMov.toString(), cxHrAbMov.toString())) {
                         carregarProdutos()
@@ -348,8 +350,8 @@ class MainActivity : AppCompatActivity() {
                 //val colecaoMovCx = db.collection("MovCaixa")
                 val colecaoMovCx = db.collection(numCx!!)
                 uuidMC = UUID.randomUUID().toString()
-                //colecaoMovCx.document(uuidMC!!).set(movCaixa)
-                colecaoMovCx.document(cxDtAbMov!!).collection("MovCaixa").document(uuidMC!!).set(movCaixa)
+
+                colecaoMovCx.document(cxDtAbMovCh!!).collection("MovCaixa").document(uuidMC!!).set(movCaixa)
 
                 emFinalizacao = true
             }
@@ -369,7 +371,7 @@ class MainActivity : AppCompatActivity() {
                 "cobranca" to pagamento,
                 "vlrPago" to vlrPago
             )
-            movCxPgto.document(cxDtAbMov!!).collection("MovCxPagto").add(movCxPgtoData)
+            movCxPgto.document(cxDtAbMovCh!!).collection("MovCxPagto").add(movCxPgtoData)
             if (vvtg!! != 0.00){
                 binding.tvTotalgeral.text = formatCurrency(vvtg)
                 binding.tvdisplay.text = "0"
@@ -393,7 +395,7 @@ class MainActivity : AppCompatActivity() {
                         "VlrUnit" to vlrUnit,
                         "Qtde" to qtde
                     )
-                movCxItem.document(cxDtAbMov!!).collection("MovCxItem").add(movCxItemData)
+                movCxItem.document(cxDtAbMovCh!!).collection("MovCxItem").add(movCxItemData)
                 }
             newArrayList.clear()
             newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
@@ -416,7 +418,8 @@ class MainActivity : AppCompatActivity() {
     private fun abrirCaixa() {
         if (cxaberto != "true") {
             val calendario = Calendar.getInstance()
-            cxDtAbMov = SimpleDateFormat("dd-MM-yyyy").format(calendario.time)
+            cxDtAbMov = SimpleDateFormat("dd/MM/yyyy").toString()
+            cxDtAbMovCh = cxDtAbMov!!.replace("/","-")
             cxHrAbMov = SimpleDateFormat("HH:mm:ss").format(calendario.time)
             val abreCx = hashMapOf(
                 "caixa" to numCx,
@@ -424,7 +427,7 @@ class MainActivity : AppCompatActivity() {
                 "dia" to cxDtAbMov,
                 "hora" to cxHrAbMov
             )
-            db.collection(numCx!!).document(cxDtAbMov!!).collection("MovCaixa").add(abreCx)
+            db.collection(numCx!!).document(cxDtAbMovCh!!).collection("MovCaixa").add(abreCx)
             val rqstCaixa = db.collection("Config").document(serialNnbr.toString())
             rqstCaixa.get()
             cxaberto = "true"
@@ -442,11 +445,11 @@ class MainActivity : AppCompatActivity() {
         var resultado : Boolean = false
         if (dia !=  "null" && hora != "null") {
             val calendario = Calendar.getInstance()
-            var diahorastr = SimpleDateFormat("dd-MM-yyyy").format(calendario.time)
+            var diahorastr = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
             diahorastr += " " + SimpleDateFormat("HH:mm:ss").format(calendario.time)
             val dhUltMovstr = dia + " " + hora
 
-            val formato = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
+            val formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
             val diahora = LocalDateTime.parse(diahorastr, formato)
             val dhUltMov = LocalDateTime.parse(dhUltMovstr, formato)
 

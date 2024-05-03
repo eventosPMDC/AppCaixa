@@ -14,10 +14,14 @@ class ListaVendasAdapter(private var mListaListaVddas : List<ListaVendasData>):
         val imgExpand: ImageView = itemView.findViewById(R.id.imgExpand)
         val tvDataHora: TextView = itemView.findViewById(R.id.tvDataHora)
         val tvTtlCobra: TextView = itemView.findViewById(R.id.tvTtlCobra)
-        val tvDetalhesVenda: TextView = itemView.findViewById(R.id.tvDetalhesVenda)
+        val tvProduto: TextView = itemView.findViewById(R.id.tvProduto)
+        val tvQtd : TextView = itemView.findViewById(R.id.tvQtd)
+        val tvVlrUnt: TextView = itemView.findViewById(R.id.tvVlrUnt)
+        val tvVlrtot: TextView = itemView.findViewById(R.id.tvVlrTot)
         val constraintLayoutLV : ConstraintLayout = itemView.findViewById(R.id.contraintLayoutLV)
+        val clListaItens : ConstraintLayout = itemView.findViewById(R.id.clListaItens)
         fun collapseExpandedView(){
-            tvDetalhesVenda.visibility = View.GONE
+            clListaItens.visibility = View.GONE
         }
     }
 
@@ -32,13 +36,18 @@ class ListaVendasAdapter(private var mListaListaVddas : List<ListaVendasData>):
 
     override fun onBindViewHolder(holder: ListaVendasViewHolder, position: Int) {
         val listaVendasData = mListaListaVddas[position]
-        holder.imgExpand.setImageResource(listaVendasData.imageExpand)
         holder.tvDataHora.text = listaVendasData.dataHora
         holder.tvTtlCobra.text = listaVendasData.totVenda
-        holder.tvDetalhesVenda.text = listaVendasData.itensVenda
+        holder.tvProduto.text = listaVendasData.produto
+        holder.tvQtd.text = listaVendasData.qtde
+        holder.tvVlrUnt.text = listaVendasData.vlrUnit
+        holder.tvVlrtot.text = listaVendasData.vlrTot
 
         val estaEspandido : Boolean = listaVendasData.expandir
-        holder.tvDetalhesVenda.visibility = if (estaEspandido) View.VISIBLE else View.GONE
+        holder.clListaItens.visibility = if (estaEspandido) View.VISIBLE else View.GONE
+        if (estaEspandido) {
+            holder.imgExpand.setImageResource(R.drawable.baseline_expand_less_24)
+        } else holder.imgExpand.setImageResource(R.drawable.baseline_expand_more_24)
 
         holder.constraintLayoutLV.setOnClickListener {
             oItemEstaExtendido(position)
