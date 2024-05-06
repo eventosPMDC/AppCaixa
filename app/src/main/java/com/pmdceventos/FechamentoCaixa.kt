@@ -42,11 +42,14 @@ class FechamentoCaixa : AppCompatActivity() {
     }
 
     private fun getVendas(){
-        var db = FirebaseFirestore.getInstance()
-        val collectionMovCx = db.collection(idcaixa!!).document(dtCx!!).collection("MovCaixa")
+        val db = FirebaseFirestore.getInstance()
+        //val collectionMovCx = db.collection(idcaixa!!).document(dtCx!!).collection("MovCaixa")
+        val collectionMovCx = db.collection("/CAIXA001").document("06052024").collection("MovCaixa")
 
-        collectionMovCx.get().addOnSuccessListener {
-            for (docMovCx in it){
+        //val qMovCx = collectionMovCx.orderBy("seqmov")
+
+        collectionMovCx.get().addOnSuccessListener {documents ->
+            for (docMovCx in documents){
                 val idMovCx = docMovCx.id.toString()
                 var cobranca = docMovCx.getString("cobranca")
                 var data = docMovCx.getString("dia")
@@ -60,6 +63,7 @@ class FechamentoCaixa : AppCompatActivity() {
                 } else {
                     val vlrTotal = docMovCx.getDouble("vlrTotal")
                     cobranca = "Total: R$ ${formatCurrency(vlrTotal)} - $cobranca"
+                    getListaItens(idMovCx)
                 }
 
                 mListaVendasAdapter.add(

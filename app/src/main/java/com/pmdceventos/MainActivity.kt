@@ -41,6 +41,8 @@ var cxDtAbMovCh : String? = ""
 var cxHrAbMov : String? = ""
 var emFinalizacao : Boolean? = false
 var uuidMC : String? = ""
+var seqmov : Int? = 0
+var crrProd : Boolean? = false
 
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
 
@@ -176,7 +178,10 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             val ibtnAbrirCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_abrecx)
-            ibtnAbrirCx.setOnClickListener { abrirCaixa() }
+            ibtnAbrirCx.setOnClickListener {
+                abrirCaixa()
+                dialog.dismiss()
+            }
             btnFchCx.setOnClickListener {
                 if (cxaberto == "fechar" || cxaberto == "true") {
                     val intent = Intent(this, FechamentoCaixa::class.java)
@@ -199,10 +204,12 @@ class MainActivity : AppCompatActivity() {
                 cxaberto = it.data?.get("cxaberto").toString()
                 if (cxaberto == "true") {
                     cxDtAbMov = it.data?.get("cxDtAbMov").toString()
-                    cxDtAbMovCh = cxDtAbMov!!.replace("/","-")
+                    cxDtAbMovCh = cxDtAbMov!!.replace("/","")
                     cxHrAbMov = it.data?.get("cxHrAbMov").toString()
+                    seqmov = it.data?.get("seqmov").hashCode()
                     if (validaCxMov(cxDtAbMov.toString(), cxHrAbMov.toString())) {
                         carregarProdutos()
+                        crrProd = true
                     } else {
                         cxaberto = "fechar"
                         val dialogBuild = AlertDialog.Builder(this)
@@ -218,39 +225,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun carregarProdutos(){
-        recyclerViewProdutos = findViewById(R.id.produtos)
-        recyclerViewProdutos.layoutManager  = LinearLayoutManager(this)
-        recyclerViewProdutos.setHasFixedSize(true)
-        produtosArrayList = arrayListOf()
-        produtosAdapter = AdapterProdutos(produtosArrayList){index -> setItemOnList(index)}
-        recyclerViewProdutos.adapter = produtosAdapter
+        if (crrProd == false) {
+            recyclerViewProdutos = findViewById(R.id.produtos)
+            recyclerViewProdutos.layoutManager = LinearLayoutManager(this)
+            recyclerViewProdutos.setHasFixedSize(true)
+            produtosArrayList = arrayListOf()
+            produtosAdapter = AdapterProdutos(produtosArrayList) { index -> setItemOnList(index) }
+            recyclerViewProdutos.adapter = produtosAdapter
 
-        db = FirebaseFirestore.getInstance()
-        db.collection("Produtos").
-               addSnapshotListener(object : EventListener<QuerySnapshot>{
-                   override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
-
-                       if (error != null){
-                           Log.e("Firestore error", error.message.toString())
-                           return
-                       }
-
-                       for (dc : DocumentChange in value?.documentChanges!!){
-                           if (dc.type == DocumentChange.Type.ADDED) {
-                               try {
-                                   produtosArrayList.add(dc.document.toObject(Produto::class.java))
-                               } catch (e: Exception) {
-                                   Log.e("Erro ao acessar 'valor'", "Exceção ao tentar acessar o campo 'valor': ${e.message}")
-                               }
-                           }
-                       }
-
-                       produtosAdapter.notifyDataSetChanged()
-
-                   }
-
-               })
-
+            db = FirebaseFirestore.getInstance()
+            db.collection("Produtos").addSnapshotListener(object : EventListener<QuerySnapshot> {
+                override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
+                    if (error != null) {
+                        Log.e("Firestore error", error.message.toString())
+                        return
+                    }
+                    for (dc: DocumentChange in value?.documentChanges!!) {
+                        if (dc.type == DocumentChange.Type.ADDED) {
+                            try {
+                                produtosArrayList.add(dc.document.toObject(Produto::class.java))
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "Erro ao acessar 'valor'",
+                                    "Exceção ao tentar acessar o campo 'valor': ${e.message}"
+                                )
+                            }
+                        }
+                    }
+                    produtosAdapter.notifyDataSetChanged()
+                }
+            })
+        }
     }
 
     private fun setItemOnList(position: Int){
@@ -338,8 +343,10 @@ class MainActivity : AppCompatActivity() {
                 val calendario = Calendar.getInstance()
                 val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
                 val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
+                seqmov = seqmov!!.plus(1)
 
                 val movCaixa = hashMapOf(
+                    "seqmov" to seqmov,
                     "dia" to dia,
                     "hora" to hora,
                     "caixa" to numCx,
@@ -347,11 +354,15 @@ class MainActivity : AppCompatActivity() {
                     "vlrTotal" to vvtg
                 )
 
-                //val colecaoMovCx = db.collection("MovCaixa")
                 val colecaoMovCx = db.collection(numCx!!)
                 uuidMC = UUID.randomUUID().toString()
 
                 colecaoMovCx.document(cxDtAbMovCh!!).collection("MovCaixa").document(uuidMC!!).set(movCaixa)
+
+                val hmUpdConfigCx = hashMapOf(
+                    "seqmov" to seqmov
+                )
+                db.collection("Config").document(serialNnbr!!).update(hmUpdConfigCx as Map<String, Int?>)
 
                 emFinalizacao = true
             }
@@ -418,10 +429,12 @@ class MainActivity : AppCompatActivity() {
     private fun abrirCaixa() {
         if (cxaberto != "true") {
             val calendario = Calendar.getInstance()
-            cxDtAbMov = SimpleDateFormat("dd/MM/yyyy").toString()
-            cxDtAbMovCh = cxDtAbMov!!.replace("/","-")
+            cxDtAbMov = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
+            cxDtAbMovCh = cxDtAbMov!!.replace("/","")
             cxHrAbMov = SimpleDateFormat("HH:mm:ss").format(calendario.time)
+            seqmov = 0
             val abreCx = hashMapOf(
+                "seqmov" to seqmov,
                 "caixa" to numCx,
                 "cobranca" to "ABERTURA DE CAIXA",
                 "dia" to cxDtAbMov,
@@ -432,6 +445,7 @@ class MainActivity : AppCompatActivity() {
             rqstCaixa.get()
             cxaberto = "true"
             val config = hashMapOf(
+                "seqmov" to seqmov,
                 "cxDtAbMov" to cxDtAbMov,
                 "cxHrAbMov" to cxHrAbMov,
                 "cxaberto" to cxaberto
