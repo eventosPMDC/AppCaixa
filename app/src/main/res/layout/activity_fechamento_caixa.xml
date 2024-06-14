@@ -11,7 +11,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recicleViewVendas"
-        android:layout_width="400dp"
+        android:layout_width="600dp"
         android:layout_height="match_parent"
         android:layout_marginStart="25dp"
         android:layout_marginTop="25dp"
@@ -22,14 +22,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <ListView
+    <TextView
         android:id="@+id/listViewCobrancas"
-        android:layout_width="350dp"
+        android:visibility="invisible"
+        android:layout_width="390dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="25dp"
-        app:layout_constraintBottom_toBottomOf="@id/cancel_fechamento"
+        android:background="@drawable/botaonum_estilo"
+        android:fontFamily="@font/consola"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/cancel_fechamento"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/recicleViewVendas"
         app:layout_constraintTop_toTopOf="@+id/recicleViewVendas" />

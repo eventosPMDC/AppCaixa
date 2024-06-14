@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="7dp"
     android:backgroundTint="@android:color/transparent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +15,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_produto"
             android:layout_width="match_parent"
-            android:layout_height="75dp"
+            android:layout_height="76dp"
             android:background="@drawable/botao_numerico"
             android:drawableLeft="@drawable/imagensproduto"
             android:fontFamily="@font/josefin_sans"

@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         } else getCaixa(serialNnbr)
 
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {
-            getCaixa(serialNnbr)
+            //getCaixa(serialNnbr)
         } else {
             // Solicitar a permissão ao usuário
             //requestPermissions(arrayOf(permission.READ_PHONE_STATE),0)
@@ -179,7 +179,11 @@ class MainActivity : AppCompatActivity() {
             }
             val ibtnAbrirCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_abrecx)
             ibtnAbrirCx.setOnClickListener {
-                abrirCaixa()
+                if (cxaberto != "fechar" && cxaberto != "true") {
+                    abrirCaixa()
+                }  else {
+                    Toast.makeText(this,"O caixa do dia $cxDtAbMov encontra-se aberto.",Toast.LENGTH_LONG).show()
+                }
                 dialog.dismiss()
             }
             btnFchCx.setOnClickListener {
@@ -233,7 +237,6 @@ class MainActivity : AppCompatActivity() {
             produtosAdapter = AdapterProdutos(produtosArrayList) { index -> setItemOnList(index) }
             recyclerViewProdutos.adapter = produtosAdapter
 
-            db = FirebaseFirestore.getInstance()
             db.collection("Produtos").addSnapshotListener(object : EventListener<QuerySnapshot> {
                 override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
                     if (error != null) {
@@ -293,7 +296,7 @@ class MainActivity : AppCompatActivity() {
         binding.tvTotalgeral.text = formatCurrency(vvtg)
     }
 
-    private fun formatCurrency(vlrtotal: Double?): CharSequence? {
+    fun formatCurrency(vlrtotal: Double?): CharSequence? {
         val formatoMoeda = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
         return formatoMoeda.format(vlrtotal)
     }
@@ -340,6 +343,7 @@ class MainActivity : AppCompatActivity() {
     private fun finalizaVenda(pagamento: String) {
         if (vvtg != 0.00) {
             if (emFinalizacao == false) {
+                emFinalizacao = true
                 val calendario = Calendar.getInstance()
                 val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
                 val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
@@ -355,16 +359,21 @@ class MainActivity : AppCompatActivity() {
                 )
 
                 val colecaoMovCx = db.collection(numCx!!)
+                //val colecaoMovCx = db.collection("movcaixa")
                 uuidMC = UUID.randomUUID().toString()
 
-                colecaoMovCx.document(cxDtAbMovCh!!).collection("MovCaixa").document(uuidMC!!).set(movCaixa)
+                colecaoMovCx.document(cxDtAbMovCh!!)
+                    .collection("MovCaixa").document(uuidMC!!).set(movCaixa)
+                //colecaoMovCx.document(uuidMC!!).set(movCaixa)
+
+                cxHrAbMov = hora
 
                 val hmUpdConfigCx = hashMapOf(
-                    "seqmov" to seqmov
+                    "seqmov" to seqmov,
+                    "cxHrAbMov" to cxHrAbMov
                 )
-                db.collection("Config").document(serialNnbr!!).update(hmUpdConfigCx as Map<String, Int?>)
-
-                emFinalizacao = true
+                db.collection("Config")
+                    .document(serialNnbr!!).update(hmUpdConfigCx as Map<String, Any>)
             }
             var vlrPago : Double = 0.00
             if (binding.tvdisplay.text.toString().toDouble() < vvtg!! && binding.tvdisplay.text.toString().toDouble() != 0.00){
@@ -375,7 +384,7 @@ class MainActivity : AppCompatActivity() {
                 vvtg = 0.00
             }
 
-            //val movCxPgto = db.collection("MovCxPagto")
+            //val movCxPgto = db.collection("movcxpagto")
             val movCxPgto = db.collection(numCx!!)
             val movCxPgtoData = hashMapOf(
                 "codMovCx" to uuidMC,
@@ -394,9 +403,9 @@ class MainActivity : AppCompatActivity() {
                 troco -= vvtg!!
             }
 
-            //val movCxItem = db.collection("MovCxItem")
+            //val movCxItem = db.collection("movcxitem")
             val movCxItem = db.collection(numCx!!)
-            val i : Int =1
+            var i : Int =1
             for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd) in newArrayList) {
                 val movCxItemData = hashMapOf(
                         "codMovCx" to uuidMC,
@@ -406,6 +415,7 @@ class MainActivity : AppCompatActivity() {
                         "VlrUnit" to vlrUnit,
                         "Qtde" to qtde
                     )
+                i++
                 movCxItem.document(cxDtAbMovCh!!).collection("MovCxItem").add(movCxItemData)
                 }
             newArrayList.clear()
@@ -427,20 +437,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun abrirCaixa() {
-        if (cxaberto != "true") {
+        if (cxaberto != "true" ) {
             val calendario = Calendar.getInstance()
             cxDtAbMov = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
             cxDtAbMovCh = cxDtAbMov!!.replace("/","")
             cxHrAbMov = SimpleDateFormat("HH:mm:ss").format(calendario.time)
             seqmov = 0
+            val iddocCx = UUID.randomUUID().toString()
             val abreCx = hashMapOf(
                 "seqmov" to seqmov,
                 "caixa" to numCx,
                 "cobranca" to "ABERTURA DE CAIXA",
                 "dia" to cxDtAbMov,
-                "hora" to cxHrAbMov
+                "hora" to cxHrAbMov,
+                "vlrTotal" to 0.00
             )
             db.collection(numCx!!).document(cxDtAbMovCh!!).collection("MovCaixa").add(abreCx)
+        //    db.collection("movcaixa").document(iddocCx).set(abreCx)
             val rqstCaixa = db.collection("Config").document(serialNnbr.toString())
             rqstCaixa.get()
             cxaberto = "true"
@@ -474,6 +487,32 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return resultado
+    }
+
+    private fun teste(){
+        val base = FirebaseFirestore.getInstance()
+        base.collection("CAIXA001")
+            .document("08052024")
+            .collection("MovCaixa")
+            .addSnapshotListener(object : EventListener<QuerySnapshot> {
+            override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
+                if (error != null) {
+                    Log.e("Firestore error", error.message.toString())
+                    return
+                }
+                for (dc: DocumentChange in value?.documentChanges!!) {
+                    if (dc.type == DocumentChange.Type.ADDED) {
+                        dc.document.id
+                        dc.document.getString("seqmov")
+                            Log.e(
+                                "Erro ao acessar 'valor'",
+                                "Exceção ao tentar acessar o campo 'valor': "
+                            )
+                        }
+                }
+            }
+        })
+
     }
 
 }
