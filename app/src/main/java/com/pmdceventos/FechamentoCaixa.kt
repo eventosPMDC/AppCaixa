@@ -62,6 +62,7 @@ class FechamentoCaixa : AppCompatActivity() {
                 "cxaberto" to "false"
             )
             db.collection("Config").document(serialNnbr!!).update(cxAberto as Map<String, Any?>)
+            cxaberto = "false"
             finish()
         }
 

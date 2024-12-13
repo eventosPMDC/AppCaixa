@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.EventListener
 import com.pmdceventos.databinding.ActivityMainBinding
+import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -72,11 +73,11 @@ class MainActivity : AppCompatActivity() {
             permission.READ_PHONE_STATE
         )
 
-        serialNnbr = getConfgApp(this,"appEventos")
+        serialNnbr = "appEventos".getConfgApp(this)
 
         if(serialNnbr == null){
             serialNnbr = UUID.randomUUID().toString()
-            setConfgApp(this,"appEventos", serialNnbr!!)
+            "appEventos".setConfgApp(this, serialNnbr!!)
             Toast.makeText(
                 this,
                 "Não houve configuração de caixa ainda, por favor fazer a configuração para utilizar o sistema.$serialNnbr",
@@ -103,19 +104,20 @@ class MainActivity : AppCompatActivity() {
         newArrayList = arrayListOf<ItensLista>()
 
         setClickButton()
+
         //carregarProdutos()
     }
 
-    private fun setConfgApp(context: Context, chave: String, valor: String){
+    private fun String.setConfgApp(context: Context, valor: String){
         val shrPreferences = context.getSharedPreferences("ConfigAppPMDC",Context.MODE_PRIVATE)
         val editor = shrPreferences.edit()
-        editor.putString(chave,valor)
+        editor.putString(this,valor)
         editor.apply()
     }
 
-    private fun getConfgApp(context: Context, chave: String): String? {
+    private fun String.getConfgApp(context: Context): String? {
         val srdPreferences = context.getSharedPreferences("ConfigAppPMDC",Context.MODE_PRIVATE)
-        return srdPreferences.getString(chave,null)
+        return srdPreferences.getString(this,null)
     }
 
     private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double,
@@ -193,7 +195,7 @@ class MainActivity : AppCompatActivity() {
                     intent.putExtra("dataCX", cxDtAbMovCh)
                     intent.putExtra("caixa", numCx)
                     startActivity(intent)
-                    getCaixa(serialNnbr)
+                    //getCaixa(serialNnbr)
                     dialog.dismiss()
                 }
             }
@@ -313,9 +315,9 @@ class MainActivity : AppCompatActivity() {
         binding.btn8.setOnClickListener {setTecladoNum(binding.btn8.text.toString())}
         binding.btn9.setOnClickListener {setTecladoNum(binding.btn9.text.toString())}
         binding.btnBack.setOnClickListener {setTecladoNum("Voltar")}
-        binding.dinheiro.setOnClickListener { finalizaVenda(binding.dinheiro.text.toString())}
-        binding.cartao.setOnClickListener { finalizaVenda(binding.cartao.text.toString())}
-        binding.pix.setOnClickListener { finalizaVenda(binding.pix.text.toString())}
+        binding.dinheiro.setOnClickListener { finalizaVenda(binding.dinheiro.text.toString().trim())}
+        binding.cartao.setOnClickListener { finalizaVenda(binding.cartao.text.toString().trim())}
+        binding.pix.setOnClickListener { finalizaVenda(binding.pix.text.toString().trim())}
     }
 
     private fun setTecladoNum(num : String){
@@ -329,13 +331,13 @@ class MainActivity : AppCompatActivity() {
                 str = str.plus(num)
                 binding.tvdisplay.text = str
             }
-            else if (num == "Voltar") {
+            else {
                     val str :String = binding.tvdisplay.text.toString()
-                    binding.tvdisplay.text = str.toString().dropLast(1)
+                    binding.tvdisplay.text = str.dropLast(1)
                     if (binding.tvdisplay.length() == 0){
                         binding.tvdisplay.text = "0"
                     }
-                }
+            }
 
         }
     }
@@ -345,6 +347,7 @@ class MainActivity : AppCompatActivity() {
             if (emFinalizacao == false) {
                 emFinalizacao = true
                 val calendario = Calendar.getInstance()
+
                 val dia = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
                 val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
                 seqmov = seqmov!!.plus(1)
@@ -400,7 +403,7 @@ class MainActivity : AppCompatActivity() {
             var troco : Double = binding.tvdisplay.text.toString().toDouble()
             if (pagamento == "DINHEIRO" && troco > vlrPago) {
                 troco = binding.tvdisplay.text.toString().toDouble()
-                troco -= vvtg!!
+                troco -= vlrPago
             }
 
             //val movCxItem = db.collection("movcxitem")
@@ -421,18 +424,14 @@ class MainActivity : AppCompatActivity() {
             newArrayList.clear()
             newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
             atualizarTotalGeral()
-            val dialogBuild = AlertDialog.Builder(this)
             emFinalizacao = false
             binding.tvdisplay.text = "0"
-            dialogBuild.setTitle("Sucesso!")
             if (troco == 0.00) {
-                dialogBuild.setMessage("Venda gravada com sucesso!")
+                Toast.makeText(this, "Venda gravada com sucesso!", Toast.LENGTH_LONG).show()
             } else {
-                dialogBuild.setMessage("Venda gravada com sucesso!\n Troco de ${formatCurrency(troco)}")
+                Toast.makeText(this,"Venda gravada com sucesso!\n Troco de " +
+                        "${formatCurrency(troco)}",Toast.LENGTH_LONG).show()
             }
-            dialogBuild.setPositiveButton("Ok"){ dialog, _ -> dialog.dismiss()}
-            val alertDialog = dialogBuild.create()
-            alertDialog.show()
         }
     }
 
