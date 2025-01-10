@@ -1,6 +1,7 @@
 package com.pmdceventos
 
 import android.Manifest.permission
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,7 @@ import android.content.pm.PackageManager
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatButton
@@ -48,7 +50,6 @@ var crrProd : Boolean? = false
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding : ActivityMainBinding
     private var db = FirebaseFirestore.getInstance()
 
@@ -59,14 +60,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var produtosArrayList: ArrayList<Produto>
     private lateinit var produtosAdapter: AdapterProdutos
 
+    private val fechaCaixa = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            produtosArrayList.clear()
+            produtosAdapter.notifyDataSetChanged()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Thread.sleep(3000)
         installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
 
         val hasPermission = PermissionChecker.checkSelfPermission(
             this,
@@ -93,10 +100,9 @@ class MainActivity : AppCompatActivity() {
                 arrayOf(permission.READ_PHONE_STATE),REQUEST_CODE_READ_PHONE_STATE
             )
         }
-        if (serialNnbr != "") {
+        /*if (serialNnbr != "") {
             binding.tvText.text = serialNnbr
-
-        }
+        }*/
 
         newRecyclerView = findViewById(R.id.rv_itens)
         newRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -105,7 +111,6 @@ class MainActivity : AppCompatActivity() {
 
         setClickButton()
 
-        //carregarProdutos()
     }
 
     private fun String.setConfgApp(context: Context, valor: String){
@@ -129,7 +134,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun deleteItem(position :Int){
-        Toast.makeText(this, "item pos $position", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "item pos $position", Toast.LENGTH_SHORT).show()
         newArrayList.removeAt(position)
         newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
         atualizarTotalGeral()
@@ -191,10 +196,10 @@ class MainActivity : AppCompatActivity() {
             btnFchCx.setOnClickListener {
                 if (cxaberto == "fechar" || cxaberto == "true") {
                     val intent = Intent(this, FechamentoCaixa::class.java)
-                    intent.putExtra("serialNmbr", serialNnbr)
                     intent.putExtra("dataCX", cxDtAbMovCh)
                     intent.putExtra("caixa", numCx)
-                    startActivity(intent)
+                    fechaCaixa.launch(intent)
+                    //startActivity(intent)
                     //getCaixa(serialNnbr)
                     dialog.dismiss()
                 }
@@ -202,6 +207,7 @@ class MainActivity : AppCompatActivity() {
             dialog.show()
         }
     }
+
     private fun getCaixa(srlNmb: String?){
         val rqstCaixa = db.collection("Config").document(srlNmb.toString())
         rqstCaixa.get().addOnSuccessListener {
@@ -230,7 +236,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun carregarProdutos(){
+    private fun carregarProdutos() {
         if (crrProd == false) {
             recyclerViewProdutos = findViewById(R.id.produtos)
             recyclerViewProdutos.layoutManager = LinearLayoutManager(this)

@@ -49,10 +49,10 @@
             android:id="@+id/tvdisplay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginBottom="6dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/background_white"
             android:maxLength="6"
             android:text="0"
@@ -206,9 +206,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="345dp"
+        android:layout_width="348dp"
         android:layout_height="460dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="14dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/botao_numerico"
         android:orientation="vertical"
@@ -270,7 +270,7 @@
             android:layout_width="match_parent"
             android:layout_height="379dp"
             android:layout_marginStart="2dp"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="4dp"
             android:background="@drawable/fundoitens"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="parent"
@@ -282,6 +282,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginBottom="3dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -310,8 +311,7 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView5"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/textView5" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -360,7 +360,7 @@
         android:layout_marginEnd="25dp"
         android:layout_marginTop="7dp"
         android:text="PIX"
-        android:textSize="25dp"
+        android:textSize="22dp"
         android:background="@drawable/botao_numerico"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
@@ -371,8 +371,8 @@
         android:layout_height="75dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
-        android:text=" CARTÃO "
-        android:textSize="25dp"
+        android:text="   CARTÃO   "
+        android:textSize="22dp"
         app:layout_constraintEnd_toStartOf="@+id/pix"
         app:layout_constraintStart_toEndOf="@+id/dinheiro"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
@@ -383,8 +383,8 @@
         android:layout_height="75dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
-        android:text=" DINHEIRO "
-        android:textSize="25dp"
+        android:text="  DINHEIRO  "
+        android:textSize="22dp"
         app:layout_constraintStart_toStartOf="@+id/linearLayout2"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 

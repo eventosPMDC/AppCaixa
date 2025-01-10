@@ -13,22 +13,23 @@
     <!--android:id="@+id/ibtn_abrecx"-->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/ibtn_abrecx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="110dp"
         android:layout_marginTop="25dp"
         android:drawableTop="@drawable/abrecaixa"
         android:text="Abrir caixa"
         app:layout_constraintEnd_toStartOf="@+id/ibtn_fechacx"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        android:background="@drawable/botao_numerico"/>
 
     <!--android:id="@+id/ibtn_fechacx"-->
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/ibtn_fechacx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="110dp"
         android:layout_marginStart="25dp"
         android:layout_marginTop="25dp"
         android:drawableTop="@drawable/fechacaixa"
@@ -36,12 +37,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ibtn_abrecx"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        android:background="@drawable/botao_numerico"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/ibtn_configcx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="110dp"
         android:layout_below="@+id/ibtn_abrecx"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="25dp"
@@ -52,7 +54,8 @@
         app:layout_constraintStart_toStartOf="@+id/ibtn_abrecx"
         app:layout_constraintTop_toBottomOf="@+id/ibtn_abrecx"
         app:layout_constraintVertical_bias="1.0"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        android:background="@drawable/botao_numerico"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
