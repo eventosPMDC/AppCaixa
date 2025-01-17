@@ -3,7 +3,6 @@ package com.pmdceventos
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,10 +10,8 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 import com.pmdceventos.databinding.ActivityFechamentoCaixaBinding
-import java.lang.reflect.Array
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -30,12 +27,12 @@ class FechamentoCaixa : AppCompatActivity() {
     private var lQtde : String? = ""
     private var lVlrUnit : String? = ""
     private var lVlrTot : String? = ""
-    val db = FirebaseFirestore.getInstance()
-    var al_idMovCx = ArrayList<String>()
-    var al_cobranca = ArrayList<String>()
-    var al_cobraOri = ArrayList<String>()
-    var al_dathra = ArrayList<String>()
-    var al_vlrTot = ArrayList<Double>()
+    private val db = FirebaseFirestore.getInstance()
+    var alidMovCx = ArrayList<String>()
+    var alCobranca = ArrayList<String>()
+    var alCobraOri = ArrayList<String>()
+    var alDathra = ArrayList<String>()
+    var alVlrTot = ArrayList<Double>()
     var i : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,21 +84,21 @@ class FechamentoCaixa : AppCompatActivity() {
                     }
                     for (dc: DocumentChange in value?.documentChanges!!) {
                         if (dc.type == DocumentChange.Type.ADDED) {
-                            al_idMovCx.add(dc.document.id.toString())
+                            alidMovCx.add(dc.document.id)
                             var cobranca = dc.document.getString("cobranca")
                             var data = dc.document.getString("dia")
                             val hora = dc.document.getString("hora")
                             data = "Data/Hora: $data - $hora"
-                            al_dathra.add(data)
+                            alDathra.add(data)
 
                             if (dc.document.getString("cobranca") != "ABERTURA DE CAIXA") {
                                 val vlrTotal = dc.document.getDouble("vlrTotal")
-                                al_cobraOri.add(cobranca!!)
+                                alCobraOri.add(cobranca!!)
                                 cobranca = "Total: R$ ${formatCurrency(vlrTotal)} - $cobranca"
-                                al_cobranca.add(cobranca)
-                                dc.document.getDouble("vlrTotal")?.let { al_vlrTot.add(it) }
+                                alCobranca.add(cobranca)
+                                dc.document.getDouble("vlrTotal")?.let { alVlrTot.add(it) }
                             } else {
-                                al_cobranca.add(cobranca!!)
+                                alCobranca.add(cobranca!!)
                             }
                             i++
                         }
@@ -122,11 +119,11 @@ class FechamentoCaixa : AppCompatActivity() {
     private fun getListaItens() {
         val dbLI = FirebaseFirestore.getInstance()
 
-        if (al_idMovCx.count() > 0) {
-            for (j in 0 until al_idMovCx.count()) {
-                if (al_cobranca[j] != "ABERTURA DE CAIXA") {
+        if (alidMovCx.count() > 0) {
+            for (j in 0 until alidMovCx.count()) {
+                if (alCobranca[j] != "ABERTURA DE CAIXA") {
                     dbLI.collection(idcaixa!!).document(dtCx!!).collection("MovCxItem")
-                        .whereEqualTo("codMovCx", al_idMovCx[j])
+                        .whereEqualTo("codMovCx", alidMovCx[j])
                         .orderBy("secItem")
                         .addSnapshotListener(object : EventListener<QuerySnapshot> {
                             override fun onEvent(
@@ -137,7 +134,7 @@ class FechamentoCaixa : AppCompatActivity() {
                                     Log.e("Firestore error", error.message.toString())
                                     return
                                 }
-                                var i: Int = 0
+                                var i = 0
                                 for (dc: DocumentChange in value?.documentChanges!!) {
                                     if (dc.type == DocumentChange.Type.ADDED) {
                                         if (i > 0) {
@@ -159,16 +156,16 @@ class FechamentoCaixa : AppCompatActivity() {
                                     }
                                 }
                                 mListaVendasAdapter.add(
-                                    ListaVendasData(al_dathra[j],al_cobranca[j],lProduto!!,lQtde!!,lVlrUnit!!,lVlrTot!!))
+                                    ListaVendasData(alDathra[j],alCobranca[j],lProduto!!,lQtde!!,lVlrUnit!!,lVlrTot!!))
                                 adaptador.notifyDataSetChanged()
                                 clearParams()
-                                if (j == al_idMovCx.count()-1)
+                                if (j == alidMovCx.count()-1)
                                     setVlrCobranca()
                             }
                         })
                 } else {
                     mListaVendasAdapter.add(
-                        ListaVendasData(al_dathra[j],al_cobranca[j],"Não há movimento",lQtde!!,lVlrUnit!!,lVlrTot!!))
+                        ListaVendasData(alDathra[j],alCobranca[j],"Não há movimento",lQtde!!,lVlrUnit!!,lVlrTot!!))
                 }
             }
             adaptador.notifyDataSetChanged()
@@ -176,29 +173,29 @@ class FechamentoCaixa : AppCompatActivity() {
     }
 
     private fun setVlrCobranca(){
-        var lCobrancas : String = ""
-        var cTexto : String = ""
+        var lCobrancas = ""
+        var cTexto = ""
         val vazio = "                         "
-        var vlrTotCob : Double = 0.00
-        for (i in 1..al_cobraOri.count()){
-            if (!lCobrancas.contains(al_cobraOri[i-1].trimIndent())){
-                for (j in 1..al_cobraOri.count()) {
-                    if (al_cobraOri[j - 1] == al_cobraOri[i - 1]){
-                        vlrTotCob += al_vlrTot[j - 1]
+        var vlrTotCob = 0.00
+        for (i in 1..alCobraOri.count()){
+            if (!lCobrancas.contains(alCobraOri[i-1].trimIndent())){
+                for (j in 1..alCobraOri.count()) {
+                    if (alCobraOri[j - 1] == alCobraOri[i - 1]){
+                        vlrTotCob += alVlrTot[j - 1]
                     }
                 }
                 if (cTexto.count() > 0 ) {
                     cTexto += "\n"
                 }
-                lCobrancas += al_cobraOri[i-1].toString().trimIndent()
-                val texto = (al_cobraOri[i-1].trimIndent() + vazio).substring(0,15)
+                lCobrancas += alCobraOri[i-1].trimIndent()
+                val texto = (alCobraOri[i-1].trimIndent() + vazio).substring(0,15)
                 val valora = vazio + formatCurrency(vlrTotCob)
                 vlrTotCob = 0.00
                 cTexto +=
                     texto + valora.substring(valora.length - 12)
 
             }
-            if (i == al_cobraOri.count()){
+            if (i == alCobraOri.count()){
                 binding.listViewCobrancas.text = cTexto
                 binding.listViewCobrancas.visibility = View.VISIBLE
             }
