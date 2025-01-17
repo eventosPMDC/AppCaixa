@@ -11,9 +11,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recicleViewVendas"
-        android:layout_width="600dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="130dp"
         app:layout_constraintBottom_toTopOf="@+id/confirm_fechamento"
@@ -25,10 +25,10 @@
     <TextView
         android:id="@+id/listViewCobrancas"
         android:visibility="invisible"
-        android:layout_width="390dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="25dp"
         android:background="@drawable/botaonum_estilo"
         android:fontFamily="@font/consola"

@@ -17,7 +17,8 @@
         <activity
             android:name=".FechamentoCaixa"
             android:exported="false"
-            android:theme="@style/Theme.PMDCEventos" />
+            android:theme="@style/Theme.PMDCEventos"
+            android:screenOrientation="userLandscape"/>
         <activity
             android:name=".MenuFerramentas"
             android:exported="false" />
@@ -28,7 +29,7 @@
             android:name=".MainActivity"
             android:theme="@style/Theme.App.SlpashScreen"
             android:exported="true"
-            android:screenOrientation="landscape">
+            android:screenOrientation="userLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

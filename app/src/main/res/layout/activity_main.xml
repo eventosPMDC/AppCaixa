@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@drawable/fundo">
+    android:background="@drawable/fundo"
+    tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/tv_text"
@@ -37,38 +36,46 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="238dp"
+        android:layout_width="262dp"
         android:layout_height="76dp"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="25dp"
         android:background="@drawable/botao_numerico"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_white"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp">
+
         <TextView
             android:id="@+id/tvdisplay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="6dp"
+
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/background_white"
+            android:fontFamily="@font/josefin_sans"
             android:maxLength="6"
             android:text="0"
             android:textAlignment="viewEnd"
-            android:textSize="50dp"
-            android:textStyle="bold"
             android:textColor="@color/black"
-            android:fontFamily="@font/josefin_sans"/>
+            android:textSize="55dp"
+            android:textStyle="bold" />
+
+        </FrameLayout>
 
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_1"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="25dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
         android:fontFamily="@font/josefin_sans"
@@ -80,104 +87,101 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_2"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="5dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="7dp"
+        android:background="@drawable/botao_numerico"
         android:text="2"
         android:textSize="45sp"
-        android:background="@drawable/botao_numerico"
+        app:layout_constraintEnd_toStartOf="@+id/btn_3"
         app:layout_constraintStart_toEndOf="@id/btn_1"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_3"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="5dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
         android:text="3"
         android:textSize="45sp"
-        app:layout_constraintStart_toEndOf="@id/btn_2"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_4"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="25dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="7dp"
+        android:background="@drawable/botao_numerico"
         android:text="4"
         android:textSize="45sp"
-        android:background="@drawable/botao_numerico"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_1"/>
+        app:layout_constraintTop_toBottomOf="@+id/btn_1" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_5"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="5dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
         android:text="5"
         android:textSize="45sp"
+        app:layout_constraintEnd_toStartOf="@+id/btn_6"
         app:layout_constraintStart_toEndOf="@id/btn_4"
-        app:layout_constraintTop_toBottomOf="@+id/btn_2"/>
+        app:layout_constraintTop_toBottomOf="@+id/btn_2" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_6"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="5dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
         android:text="6"
         android:textSize="45sp"
-        app:layout_constraintStart_toEndOf="@id/btn_5"
-        app:layout_constraintTop_toBottomOf="@+id/btn_3"/>
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/btn_3" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_7"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="25dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
         android:text="7"
         android:textSize="45sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_4"/>
+        app:layout_constraintTop_toBottomOf="@+id/btn_4" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_8"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="5dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
         android:text="8"
         android:textSize="45sp"
+        app:layout_constraintEnd_toStartOf="@+id/btn_9"
         app:layout_constraintStart_toEndOf="@id/btn_7"
-        app:layout_constraintTop_toBottomOf="@+id/btn_5"/>
+        app:layout_constraintTop_toBottomOf="@+id/btn_5" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_9"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="5dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
         android:text="9"
         android:textSize="45sp"
-        app:layout_constraintStart_toEndOf="@id/btn_8"
-        app:layout_constraintTop_toBottomOf="@+id/btn_6"/>
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/btn_6" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_0"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="7dp"
         android:background="@drawable/botao_numerico"
         android:text="0"
@@ -188,182 +192,167 @@
 
     <ImageButton
         android:id="@+id/btn_back"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="5dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="7dp"
-        app:layout_constraintStart_toEndOf="@+id/btn_0"
-        app:layout_constraintTop_toBottomOf="@+id/btn_9"
         android:background="@drawable/botao_numerico"
         android:src="@drawable/baseline_backspace_24"
-        />
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/btn_9" />
 
     <!-- final da exibição dos botoes teclado -->
 
     <!-- inicio da exibição dos itens -->
-
-    <!-- final da exibição dos itens -->
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="348dp"
-        android:layout_height="460dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="24dp"
-        android:background="@drawable/botao_numerico"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:ignore="MissingConstraints">
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:text="Descrição item"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView2"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:text="Valor Total"
-                android:textAlignment="viewEnd"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView3"
-                app:layout_constraintStart_toEndOf="@+id/textView4"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="65dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="Excluir?"
-                android:textAlignment="viewEnd"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView2"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_itens"
-            android:layout_width="match_parent"
-            android:layout_height="379dp"
-            android:layout_marginStart="2dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/fundoitens"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="3dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="120dp"
-                android:layout_height="22dp"
-                android:text="Valor Total:"
-                android:textAlignment="viewEnd"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tv_totalgeral"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_totalgeral"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                android:text="R$ 0,00"
-                android:textAlignment="viewEnd"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView5" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="570dp" />
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/produtos"
-        android:layout_width="345dp"
-        android:layout_height="341dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
+        android:layout_width="0dp"
+        android:layout_height="348dp"
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/btn_back"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
-        app:layout_constraintStart_toEndOf="@+id/btn_back"
-        app:layout_constraintTop_toTopOf="@+id/btn_2"
+        app:layout_constraintEnd_toStartOf="@+id/glItensVendas"
+        app:layout_constraintStart_toStartOf="@+id/glNumbKeys"
         tools:listitem="@layout/listar_produtos">
 
     </androidx.recyclerview.widget.RecyclerView>
+    <!-- final da exibição dos itens -->
+
+    <FrameLayout
+        android:id="@+id/frameListItens"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/glItensVendas">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/botao_numerico"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/cartao"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/produtos"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="MissingConstraints">
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Descrição item"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textView2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Valor Total"
+                    android:textAlignment="viewEnd"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textView3"
+                    app:layout_constraintStart_toEndOf="@+id/textView4"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:text="Excluir?"
+                    android:textAlignment="viewEnd"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView2"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_itens"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="35dp"
+                android:layout_marginBottom="40dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="4dp"
+                android:background="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="120dp"
+                    android:layout_height="22dp"
+                    android:text="Valor Total:"
+                    android:textAlignment="viewEnd"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_totalgeral"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_totalgeral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:text="R$ 0,00"
+                    android:textAlignment="viewEnd"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView5" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/pix"
         android:layout_width="wrap_content"
         android:layout_height="75dp"
-        android:layout_marginEnd="25dp"
         android:layout_marginTop="7dp"
+        android:background="@drawable/botao_numerico"
         android:text="PIX"
         android:textSize="22dp"
-        android:background="@drawable/botao_numerico"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/frameListItens"
+        app:layout_constraintTop_toBottomOf="@+id/frameListItens" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/cartao"
@@ -373,9 +362,10 @@
         android:background="@drawable/botao_numerico"
         android:text="   CARTÃO   "
         android:textSize="22dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/pix"
         app:layout_constraintStart_toEndOf="@+id/dinheiro"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/frameListItens" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/dinheiro"
@@ -385,7 +375,38 @@
         android:background="@drawable/botao_numerico"
         android:text="  DINHEIRO  "
         android:textSize="22dp"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/frameListItens"
+        app:layout_constraintTop_toBottomOf="@+id/frameListItens" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="10dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="198dp" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/glItensVendas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="369dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/glNumbKeys"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="281dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

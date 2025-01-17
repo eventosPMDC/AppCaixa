@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.PermissionChecker
 import android.content.pm.PackageManager
+import android.hardware.display.DisplayManager
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -25,7 +26,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.EventListener
 import com.pmdceventos.databinding.ActivityMainBinding
-import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -34,6 +34,8 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
+import android.util.DisplayMetrics
+import android.view.WindowManager
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
@@ -100,6 +102,7 @@ class MainActivity : AppCompatActivity() {
                 arrayOf(permission.READ_PHONE_STATE),REQUEST_CODE_READ_PHONE_STATE
             )
         }
+
         /*if (serialNnbr != "") {
             binding.tvText.text = serialNnbr
         }*/
