@@ -2,6 +2,7 @@ package com.pmdceventos
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pmdceventos.databinding.ActivityConfigCxBinding
@@ -16,6 +17,11 @@ class ConfigCx : AppCompatActivity() {
         setContentView(binding.root)
         binding.edtChaveunica.setText(intent.getStringExtra("serialNmbr"))
         binding.edtCaixa.setText(intent.getStringExtra("caixa"))
+        val edtCaixa = findViewById<EditText>(R.id.edt_caixa)
+        edtCaixa.setText(intent.getStringExtra("caixa"))
+        if (!edtCaixa.equals("")){
+            edtCaixa.isEnabled = false
+        }
         binding.btnOk.setOnClickListener {
             val chvunica = binding.edtChaveunica.text.toString()
             val caixa    = binding.edtCaixa.text.toString()

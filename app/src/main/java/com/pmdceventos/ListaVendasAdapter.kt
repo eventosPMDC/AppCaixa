@@ -68,7 +68,7 @@ class ListaVendasAdapter(private var mListaListaVddas : List<ListaVendasData>):
         position: Int,
         payloads: MutableList<Any>
     ){
-        if(payloads.isNotEmpty() && payloads[0] == 0){
+        if(payloads.isNotEmpty() && (payloads[0] == 0)){
             holder.collapseExpandedView()
             holder.imgExpand.setImageResource(R.drawable.baseline_expand_more_24)
         }else{

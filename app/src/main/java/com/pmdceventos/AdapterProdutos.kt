@@ -31,7 +31,7 @@ class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnLis
             append("\n")
             append(formatCurrency(valor))
         }
-        holder.btbproduto.setCompoundDrawablesWithIntrinsicBounds(getState(currentProduto.nome),0,0,0)
+        holder.btbproduto.setCompoundDrawablesWithIntrinsicBounds(getState(currentProduto.imagem),0,0,0)
         holder.btbproduto.setOnClickListener { setItemOnList(position) }
     }
 
@@ -41,13 +41,32 @@ class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnLis
                 return R.drawable.latasrefri
             }
             "AGUA" -> {
-                return R.drawable.garrafa_agua
+                return R.drawable.agua
             }
             "CERVEJA" -> {
-                return R.drawable.latascerveja
+                return R.drawable.cerveja
             }
             "CHOPP" -> {
                 return R.drawable.chopp
+            }
+            "COCAL" -> {
+                return R.drawable.cocacola
+            }
+            "GUARANAA" -> {
+                return R.drawable.guaranal
+            }
+            "JCOLA" -> {
+                return R.drawable.jcola
+            }
+            "JGUARA" -> {
+                return R.drawable.jguarana
+            }
+            "CHOPPP" -> {
+                return R.drawable.choppp
+            }
+
+            "CHOPPE" -> {
+                return R.drawable.choppe
             }
             else -> {
                 return R.drawable.baseline_catching_pokemon

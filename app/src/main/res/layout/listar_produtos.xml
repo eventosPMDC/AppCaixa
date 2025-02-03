@@ -15,7 +15,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_produto"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="85dp"
             android:background="@drawable/botao_numerico"
             android:drawableLeft="@drawable/imagensproduto"
             android:fontFamily="@font/josefin_sans"

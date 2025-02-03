@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.PermissionChecker
 import android.content.pm.PackageManager
-import android.hardware.display.DisplayManager
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -34,8 +33,9 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
-import android.util.DisplayMetrics
-import android.view.WindowManager
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.os.Build
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Thread.sleep(3000)
         installSplashScreen()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -114,6 +115,28 @@ class MainActivity : AppCompatActivity() {
 
         setClickButton()
 
+        hideSystemBars()
+
+    }
+
+    private fun hideSystemBars() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Para Android 11 (API 30) ou superior
+            val controller = window.insetsController
+            if (controller != null) {
+                controller.hide(WindowInsets.Type.systemBars()) // Oculta barra de status e navegação
+                controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            // Para versões anteriores ao Android 11
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                            or View.SYSTEM_UI_FLAG_FULLSCREEN // Oculta a barra de status
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // Oculta a barra de navegação
+                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    )
+        }
     }
 
     private fun String.setConfgApp(context: Context, valor: String){
@@ -170,6 +193,9 @@ class MainActivity : AppCompatActivity() {
 
     fun showDialog(view: View) {
         if (view.id == R.id.ibtn_config){
+            if (vvtg != 0.00) {
+               return
+            }
             val alertDialog = AlertDialog.Builder(ContextThemeWrapper(this, R.style.RoundedAlertDialog))
             val inflater = layoutInflater
             val viewMF = inflater.inflate(R.layout.activity_menu_ferramentas, null)
@@ -177,6 +203,7 @@ class MainActivity : AppCompatActivity() {
             val dialog = alertDialog.create()
             val btnCnfcx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_configcx)
             val btnFchCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_fechacx)
+            val btnRelatorio = viewMF.findViewById<AppCompatButton>(R.id.ibtn_relatorios)
             btnCnfcx.setOnClickListener{
                 val intent = Intent(this, ConfigCx::class.java)
                 intent.putExtra("serialNmbr", serialNnbr)

@@ -2,8 +2,9 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="55dp"
+    android:layout_height="70dp"
     android:layout_marginStart="3dp"
     android:layout_marginEnd="1dp"
     android:layout_marginTop="1dp"
@@ -12,74 +13,79 @@
     android:backgroundTint="@android:color/transparent"
     >
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@drawable/botaonum_estilo">
 
-        <LinearLayout
-            android:id="@+id/ll_itens"
-            android:layout_width="125dp"
-            android:layout_height="60dp"
-            android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_item"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="16dp"
+            android:text="REFRIGERANTE"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/guideline6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_item"
-                android:layout_width="120dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:text="REFRIGERANTE"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textAlignment="textEnd"/>
+        <TextView
+            android:id="@+id/tv_qtdvlrun"
+            android:layout_width="120dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="14dp"
+            android:text="4 X 4,00"
+            android:textAlignment="textEnd"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline6"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_qtdvlrun"
-                android:layout_width="120dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="1dp"
-                android:text="4 X 4,00"
-                android:textAlignment="textEnd"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tv_vlrtotal"
+            android:layout_width="132dp"
+            android:layout_height="22dp"
+            android:text="R$ 1.000,00"
+            android:textAlignment="textEnd"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline5"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_del"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@drawable/baseline_delete_forever_24"
+            android:contentDescription="excluir item"
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#000000"
+            android:textColorLink="#000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="@+id/guideline5"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="2dp"
-            android:layout_toEndOf="@+id/ll_itens"
-            android:orientation="horizontal">
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.80" />
 
-            <TextView
-                android:id="@+id/tv_vlrtotal"
-                android:layout_width="132dp"
-                android:layout_height="22dp"
-                android:layout_marginTop="5dp"
-                android:text="R$ 1.000,00"
-                android:textAlignment="textEnd"
-                android:textSize="19sp"
-                android:textStyle="bold" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_del"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="2dp"
-                android:background="@drawable/baseline_delete_forever_24"
-                android:contentDescription="excluir item"
-                android:textColor="#FFFFFF"
-                android:textColorHighlight="#000000"
-                android:textColorLink="#000000"
-                />
 
-        </LinearLayout>
-
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
