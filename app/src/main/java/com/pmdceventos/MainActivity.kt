@@ -36,11 +36,15 @@ import java.util.UUID
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import kotlin.system.exitProcess
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
 var vvtg : Double? = 0.00
 var cxaberto : String? = ""
+var uuidCXDtMov : String? = ""
 var cxDtAbMov : String? = ""
 var cxDtAbMovCh : String? = ""
 var cxHrAbMov : String? = ""
@@ -70,10 +74,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val tempoInatividade: Long = 14400000
+    private val handler = Handler(Looper.getMainLooper())
+    private val inactivityRunnable = Runnable {
+        (this as? Activity)?.finishAffinity()
+        exitProcess(0)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Thread.sleep(3000)
         installSplashScreen()
+
+        resetInactivityTimer()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -119,6 +132,21 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun resetInactivityTimer(){
+        handler.removeCallbacks(inactivityRunnable)
+        handler.postDelayed(inactivityRunnable,tempoInatividade)
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        resetInactivityTimer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(inactivityRunnable)
+    }
+
     private fun hideSystemBars() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // Para Android 11 (API 30) ou superior
@@ -140,7 +168,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun String.setConfgApp(context: Context, valor: String){
-        val shrPreferences = context.getSharedPreferences("ConfigAppPMDC",Context.MODE_PRIVATE)
+        val shrPreferences = context.getSharedPreferences("ConfigAppPMDC", MODE_PRIVATE)
         val editor = shrPreferences.edit()
         editor.putString(this,valor)
         editor.apply()
@@ -203,7 +231,6 @@ class MainActivity : AppCompatActivity() {
             val dialog = alertDialog.create()
             val btnCnfcx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_configcx)
             val btnFchCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_fechacx)
-            val btnRelatorio = viewMF.findViewById<AppCompatButton>(R.id.ibtn_relatorios)
             btnCnfcx.setOnClickListener{
                 val intent = Intent(this, ConfigCx::class.java)
                 intent.putExtra("serialNmbr", serialNnbr)
@@ -226,7 +253,7 @@ class MainActivity : AppCompatActivity() {
             btnFchCx.setOnClickListener {
                 if (cxaberto == "fechar" || cxaberto == "true") {
                     val intent = Intent(this, FechamentoCaixa::class.java)
-                    intent.putExtra("dataCX", cxDtAbMovCh)
+                    intent.putExtra("dataCX", uuidCXDtMov)
                     intent.putExtra("caixa", numCx)
                     fechaCaixa.launch(intent)
                     //startActivity(intent)
@@ -247,6 +274,7 @@ class MainActivity : AppCompatActivity() {
                 if (cxaberto == "true") {
                     cxDtAbMov = it.data?.get("cxDtAbMov").toString()
                     cxDtAbMovCh = cxDtAbMov!!.replace("/","")
+                    uuidCXDtMov = it.data?.get("uuidCXDtMov").toString()
                     cxHrAbMov = it.data?.get("cxHrAbMov").toString()
                     seqmov = it.data?.get("seqmov").hashCode()
                     if (validaCxMov(cxDtAbMov.toString(), cxHrAbMov.toString())) {
@@ -275,7 +303,7 @@ class MainActivity : AppCompatActivity() {
             produtosAdapter = AdapterProdutos(produtosArrayList) { index -> setItemOnList(index) }
             recyclerViewProdutos.adapter = produtosAdapter
 
-            db.collection("Produtos").addSnapshotListener(object : EventListener<QuerySnapshot> {
+            db.collection("ProdutosLRF").addSnapshotListener(object : EventListener<QuerySnapshot> {
                 override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
                     if (error != null) {
                         Log.e("Firestore error", error.message.toString())
@@ -401,7 +429,7 @@ class MainActivity : AppCompatActivity() {
                 //val colecaoMovCx = db.collection("movcaixa")
                 uuidMC = UUID.randomUUID().toString()
 
-                colecaoMovCx.document(cxDtAbMovCh!!)
+                colecaoMovCx.document(uuidCXDtMov!!)
                     .collection("MovCaixa").document(uuidMC!!).set(movCaixa)
                 //colecaoMovCx.document(uuidMC!!).set(movCaixa)
 
@@ -430,7 +458,7 @@ class MainActivity : AppCompatActivity() {
                 "cobranca" to pagamento,
                 "vlrPago" to vlrPago
             )
-            movCxPgto.document(cxDtAbMovCh!!).collection("MovCxPagto").add(movCxPgtoData)
+            movCxPgto.document(uuidCXDtMov!!).collection("MovCxPagto").add(movCxPgtoData)
             if (vvtg!! != 0.00){
                 binding.tvTotalgeral.text = formatCurrency(vvtg)
                 binding.tvdisplay.text = "0"
@@ -455,7 +483,7 @@ class MainActivity : AppCompatActivity() {
                         "Qtde" to qtde
                     )
                 i++
-                movCxItem.document(cxDtAbMovCh!!).collection("MovCxItem").add(movCxItemData)
+                movCxItem.document(uuidCXDtMov!!).collection("MovCxItem").add(movCxItemData)
                 }
             newArrayList.clear()
             newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
@@ -465,41 +493,67 @@ class MainActivity : AppCompatActivity() {
             if (troco == 0.00) {
                 Toast.makeText(this, "Venda gravada com sucesso!", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(this,"Venda gravada com sucesso!\n Troco de " +
-                        "${formatCurrency(troco)}",Toast.LENGTH_LONG).show()
+                val dialogBuild = AlertDialog.Builder(this)
+                dialogBuild.setTitle("Atenção!")
+                dialogBuild.setMessage("Venda gravada com sucesso!\n Troco de ${formatCurrency(troco)}")
+                dialogBuild.setPositiveButton("Ok"){ dialog, _ -> dialog.dismiss()}
+                val alertDialog = dialogBuild.create()
+                alertDialog.show()
+                //Toast.makeText(this,"Venda gravada com sucesso!\n Troco de " +
+               //         "${formatCurrency(troco)}",Toast.LENGTH_LONG).show()
             }
         }
     }
 
     private fun abrirCaixa() {
         if (cxaberto != "true" ) {
-            val calendario = Calendar.getInstance()
-            cxDtAbMov = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
-            cxDtAbMovCh = cxDtAbMov!!.replace("/","")
-            cxHrAbMov = SimpleDateFormat("HH:mm:ss").format(calendario.time)
-            seqmov = 0
-            val iddocCx = UUID.randomUUID().toString()
-            val abreCx = hashMapOf(
-                "seqmov" to seqmov,
-                "caixa" to numCx,
-                "cobranca" to "ABERTURA DE CAIXA",
-                "dia" to cxDtAbMov,
-                "hora" to cxHrAbMov,
-                "vlrTotal" to 0.00
-            )
-            db.collection(numCx!!).document(cxDtAbMovCh!!).collection("MovCaixa").add(abreCx)
-        //    db.collection("movcaixa").document(iddocCx).set(abreCx)
-            val rqstCaixa = db.collection("Config").document(serialNnbr.toString())
-            rqstCaixa.get()
-            cxaberto = "true"
-            val config = hashMapOf(
-                "seqmov" to seqmov,
-                "cxDtAbMov" to cxDtAbMov,
-                "cxHrAbMov" to cxHrAbMov,
-                "cxaberto" to cxaberto
-            )
-            rqstCaixa.update(config as Map<String, String?>)
-            carregarProdutos()
+            //validar caixa aberto
+            var cxDtAbMovChVld : String? = ""
+            val rqstCaixaVld = db.collection("Config").document(serialNnbr!!)
+            rqstCaixaVld.get().addOnSuccessListener {
+                if (it != null) {
+                    cxDtAbMovChVld =it.data?.get("cxDtAbMov").toString()
+                }
+
+                val calendario = Calendar.getInstance()
+                cxDtAbMov = SimpleDateFormat("dd/MM/yyyy").format(calendario.time)
+                cxDtAbMovCh = cxDtAbMov!!.replace("/","")
+                cxHrAbMov = SimpleDateFormat("HH:mm:ss").format(calendario.time)
+                if (cxDtAbMov != cxDtAbMovChVld) {
+                    seqmov = 0
+                    uuidCXDtMov = UUID.randomUUID().toString()
+                    val abreCx = hashMapOf(
+                        "seqmov" to seqmov,
+                        "caixa" to numCx,
+                        "cobranca" to "ABERTURA DE CAIXA",
+                        "dia" to cxDtAbMov,
+                        "hora" to cxHrAbMov,
+                        "vlrTotal" to 0.00
+                    )
+                    val idMov = hashMapOf(
+                        "idMov" to uuidCXDtMov,
+                        "dia" to cxDtAbMov
+                    )
+                    db.collection(numCx!!).document(uuidCXDtMov!!).set(idMov)
+                    db.collection(numCx!!).document(uuidCXDtMov!!).collection("MovCaixa").add(abreCx)
+                }
+                //    db.collection("movcaixa").document(iddocCx).set(abreCx)
+                val rqstCaixa = db.collection("Config").document(serialNnbr.toString())
+                rqstCaixa.get()
+                cxaberto = "true"
+                val config = hashMapOf(
+                    "seqmov" to seqmov,
+                    "cxDtAbMov" to cxDtAbMov,
+                    "cxHrAbMov" to cxHrAbMov,
+                    "cxaberto" to cxaberto,
+                    "uuidCXDtMov" to uuidCXDtMov
+                )
+                rqstCaixa.update(config as Map<String, String?>)
+                crrProd = false
+                carregarProdutos()
+            }
+            //fim validação
+
         }
     }
 

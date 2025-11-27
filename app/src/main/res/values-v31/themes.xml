@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.App.SlpashScreen" parent="Theme.PMDCEventos">
+        <item name="android:windowSplashScreenBackground">@drawable/fundo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/festa_icon</item>-->
+        <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.PMDCEventos</item>
+    </style>
+</resources>

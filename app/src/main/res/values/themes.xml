@@ -5,7 +5,7 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <!--<item name="colorPrimary">@color/cinza</item>-->
         <item name="android:textColor">@color/font_color</item>
-        <item name="android:fontFamily">@font/josefin_sans</item>
+        <item name="android:fontFamily">@font/open_sans_condensed_bold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowActionBar">false</item>

@@ -19,7 +19,7 @@ class ConfigCx : AppCompatActivity() {
         binding.edtCaixa.setText(intent.getStringExtra("caixa"))
         val edtCaixa = findViewById<EditText>(R.id.edt_caixa)
         edtCaixa.setText(intent.getStringExtra("caixa"))
-        if (!edtCaixa.equals("")){
+        if (intent.getStringExtra("caixa") != ""){
             edtCaixa.isEnabled = false
         }
         binding.btnOk.setOnClickListener {

@@ -25,7 +25,6 @@ class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnLis
         val currentProduto = produto[position]
         val nome = currentProduto.nome
         val valor = currentProduto.valor
-        val idProd = currentProduto.idProd
         holder.btbproduto.text = buildString {
             append(nome)
             append("\n")
@@ -64,9 +63,44 @@ class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnLis
             "CHOPPP" -> {
                 return R.drawable.choppp
             }
-
             "CHOPPE" -> {
                 return R.drawable.choppe
+            }
+            "COCAZ" -> {
+                return R.drawable.cocazero
+            }
+             "CERVANT" -> {
+                return R.drawable.cervantartica
+            }
+             "HOTDOG" -> {
+                return R.drawable.hotdog
+            }
+             "HOTDOGS" -> {
+                 return R.drawable.hotdogs
+            }
+             "ESPETINHO" -> {
+               return R.drawable.espetinho
+            }
+             "ESPETINHOS" -> {
+                return R.drawable.espetinhos
+            }
+             "MINIPIZZA" -> {
+                return R.drawable.minipizza
+            }
+             "MINIPIZZAS" -> {
+                return R.drawable.minipizzas
+            }
+             "PIPOCA" -> {
+                 return R.drawable.pipoca
+            }
+             "ALGODAODOCE" -> {
+                 return R.drawable.agodaodoce
+            }
+             "BRINCADEIRAS" -> {
+                 return R.drawable.brincadeira
+             }
+            "SALGADOS" -> {
+                 return R.drawable.salgados
             }
             else -> {
                 return R.drawable.baseline_catching_pokemon
