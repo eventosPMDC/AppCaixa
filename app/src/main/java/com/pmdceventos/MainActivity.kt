@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.PermissionChecker
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -35,10 +38,14 @@ import java.util.Locale
 import java.util.UUID
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.widget.ImageView
+import android.widget.TextView
 import kotlin.system.exitProcess
+import androidx.core.content.edit
+import android.graphics.Color
+import androidx.core.graphics.toColorInt
 
 var serialNnbr: String? = ""
 var numCx: String? = ""
@@ -52,7 +59,9 @@ var emFinalizacao : Boolean? = false
 var uuidMC : String? = ""
 var seqmov : Int? = 0
 var crrProd : Boolean? = false
-
+var usaVlrDif : Boolean? = true //Usado para quando for ter valor diferente quanto a finalização, inicialmente para Laura Rebouças quando cartão C/D e Dim/Pix
+var showVlrVista: Boolean? = true
+var connectedInt: Boolean? = false
 private const val REQUEST_CODE_READ_PHONE_STATE = 1
 
 class MainActivity : AppCompatActivity() {
@@ -66,11 +75,30 @@ class MainActivity : AppCompatActivity() {
     private lateinit var produtosArrayList: ArrayList<Produto>
     private lateinit var produtosAdapter: AdapterProdutos
 
+    private lateinit var imgStatus: ImageView
+    private lateinit var connectivityManager: ConnectivityManager
+
     private val fechaCaixa = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         result ->
         if (result.resultCode == Activity.RESULT_OK) {
             produtosArrayList.clear()
             produtosAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private val networkCallback = object : ConnectivityManager.NetworkCallback(){
+        override fun onAvailable(network: Network) {
+            runOnUiThread {
+                imgStatus.setImageResource(R.drawable.wifi_conected)
+                connectedInt = true
+            }
+        }
+
+        override fun onLost(network: Network) {
+            runOnUiThread {
+                imgStatus.setImageResource(R.drawable.wifi_desconected)
+                connectedInt = false
+            }
         }
     }
 
@@ -96,15 +124,17 @@ class MainActivity : AppCompatActivity() {
             permission.READ_PHONE_STATE
         )
 
-        serialNnbr = "appEventos".getConfgApp(this)
+        imgStatus = findViewById(R.id.imgStatus)
+        connectivityManager = getSystemService(ConnectivityManager::class.java)
+        verificarConexaoInicial()
 
-        if(serialNnbr == null){
+        this.getConfigsApp(this)
+        //serialNnbr = "appEventos".getConfgApp(this)
+
+        if(serialNnbr == ""){
             serialNnbr = UUID.randomUUID().toString()
-            "appEventos".setConfgApp(this, serialNnbr!!)
-            Toast.makeText(
-                this,
-                "Não houve configuração de caixa ainda, por favor fazer a configuração para utilizar o sistema.$serialNnbr",
-                Toast.LENGTH_LONG).show()
+            //"appEventos".setConfgApp(this, serialNnbr!!)
+            this.saveConfigApp(this)
         } else getCaixa(serialNnbr)
 
         if (hasPermission == PackageManager.PERMISSION_GRANTED) {
@@ -148,23 +178,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideSystemBars() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Para Android 11 (API 30) ou superior
-            val controller = window.insetsController
-            if (controller != null) {
-                controller.hide(WindowInsets.Type.systemBars()) // Oculta barra de status e navegação
-                controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            // Para versões anteriores ao Android 11
-            @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            or View.SYSTEM_UI_FLAG_FULLSCREEN // Oculta a barra de status
-                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // Oculta a barra de navegação
-                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    )
+        // Para Android 11 (API 30) ou superior
+        val controller = window.insetsController
+        if (controller != null) {
+            controller.hide(WindowInsets.Type.systemBars()) // Oculta barra de status e navegação
+            controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
+    }
+
+    private fun verificarConexaoInicial(){
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        val conectadoInternet = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+
+        if (conectadoInternet) {
+            imgStatus.setImageResource(R.drawable.wifi_conected)
+            connectedInt = true
+        } else {
+            imgStatus.setImageResource(R.drawable.wifi_desconected)
+            connectedInt = false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        connectivityManager.unregisterNetworkCallback(networkCallback)
+    }
+
+    private fun saveConfigApp(context: Context){
+        val sharedPreferences = context.getSharedPreferences("ConfigAppPMDC", MODE_PRIVATE)
+        sharedPreferences.edit {
+            putString("serialNmb", serialNnbr)
+            putString("caixaNmb", numCx)
+        }
+    }
+
+    private fun getConfigsApp(context: Context){
+        val sharedPreferences = context.getSharedPreferences("ConfigAppPMDC", MODE_PRIVATE)
+        serialNnbr = sharedPreferences.getString("serialNmb", "")
+        numCx = sharedPreferences.getString("caixaNmb","")
+        binding.caixa.text = numCx
     }
 
     private fun String.setConfgApp(context: Context, valor: String){
@@ -180,8 +238,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun geraDados(descricao:String, qtdvlri: String, vlrtt: Double,
-                          vlrunt : Double, qtde: Int, idProd: String) {
-        val itensLista = ItensLista(descricao,qtdvlri,vlrtt,vlrunt,qtde, idProd)
+                          vlrunt : Double, qtde: Int, idProd: String, vlrunitc : Double) {
+        val itensLista = ItensLista(descricao,qtdvlri,vlrtt,vlrunt,qtde, idProd, vlrunitc)
         newArrayList.add(itensLista)
         newRecyclerView.adapter = AdapterItensLista(newArrayList){index -> deleteItem(index)}
         atualizarTotalGeral()
@@ -231,6 +289,7 @@ class MainActivity : AppCompatActivity() {
             val dialog = alertDialog.create()
             val btnCnfcx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_configcx)
             val btnFchCx = viewMF.findViewById<AppCompatButton>(R.id.ibtn_fechacx)
+            val btncbEstque = viewMF.findViewById<AppCompatButton>(R.id.cbEstoque)
             btnCnfcx.setOnClickListener{
                 val intent = Intent(this, ConfigCx::class.java)
                 intent.putExtra("serialNmbr", serialNnbr)
@@ -261,6 +320,15 @@ class MainActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }
             }
+            btncbEstque.setOnClickListener {
+                if (connectedInt == true) {
+                    val intentEstoque = Intent(this, PosicaoEstoque::class.java)
+                    startActivity(intentEstoque)
+                    dialog.dismiss()
+                } else {
+                    showCaixaDialogo("Atenção!!", "Você não está conectado na internet, portanto não é possível acessar o estoque!")
+                }
+            }
             dialog.show()
         }
     }
@@ -269,7 +337,12 @@ class MainActivity : AppCompatActivity() {
         val rqstCaixa = db.collection("Config").document(srlNmb.toString())
         rqstCaixa.get().addOnSuccessListener {
             if (it != null){
-                numCx = it.data?.get("caixa").toString()
+                if (numCx == "" || numCx == "null") {
+                    numCx = it.data?.get("caixa").toString()
+                    Toast.makeText(this,"Caxia $numCx", Toast.LENGTH_LONG).show()
+                    this.saveConfigApp(this)
+                    binding.caixa.text = numCx
+                }
                 cxaberto = it.data?.get("cxaberto").toString()
                 if (cxaberto == "true") {
                     cxDtAbMov = it.data?.get("cxDtAbMov").toString()
@@ -300,10 +373,10 @@ class MainActivity : AppCompatActivity() {
             recyclerViewProdutos.layoutManager = LinearLayoutManager(this)
             recyclerViewProdutos.setHasFixedSize(true)
             produtosArrayList = arrayListOf()
-            produtosAdapter = AdapterProdutos(produtosArrayList) { index -> setItemOnList(index) }
+            produtosAdapter = AdapterProdutos(produtosArrayList, usaVlrDif == true) { index -> setItemOnList(index) }
             recyclerViewProdutos.adapter = produtosAdapter
 
-            db.collection("ProdutosLRF").addSnapshotListener(object : EventListener<QuerySnapshot> {
+            db.collection("Produtos").orderBy("secProd").addSnapshotListener(object : EventListener<QuerySnapshot> {
                 override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
                     if (error != null) {
                         Log.e("Firestore error", error.message.toString())
@@ -341,25 +414,33 @@ class MainActivity : AppCompatActivity() {
             val vlrunit = binding.tvdisplay.text.toString()
             var vlrtotal = vlrunit.toDouble()
             vlrtotal *= produto.valor!!
-            geraDados(produto.nome,qtdvlri,vlrtotal, produto.valor!!,vlrunit.toInt(), produto.idProd)
+            geraDados(produto.nome,qtdvlri,vlrtotal, produto.valor!!,vlrunit.toInt(), produto.idProd, produto.valorC!!)
         } else {
             val qtdvlr = buildString {
                 append("1")
                 append(" X ")
                 append(formatCurrency(produto.valor))
             }
-            geraDados(produto.nome,qtdvlr,produto.valor!!, produto.valor!!,1, produto.idProd)
+            geraDados(produto.nome,qtdvlr,produto.valor!!, produto.valor!!,1, produto.idProd, produto.valorC!!)
         }
         binding.tvdisplay.text = "0"
     }
 
     private fun atualizarTotalGeral(){
         vvtg = 0.00
+        var vlrPraso : Double? = 0.00
 
         for (i in newArrayList.indices){
             vvtg = vvtg!! + newArrayList[i].vlrtotal!!
+            vlrPraso = newArrayList[i].qtde?.times(newArrayList[i].vlrUnitC!!)?.let { vlrPraso?.plus(it) }
         }
-        binding.tvTotalgeral.text = formatCurrency(vvtg)
+        if (showVlrVista == true) {
+            binding.tvTotalgeral.text = formatCurrency(vvtg)
+            binding.tvTotalgeral.setTextColor("#A1A1A0".toColorInt())
+        } else {
+            binding.tvTotalgeral.text = formatCurrency(vlrPraso)
+            binding.tvTotalgeral.setTextColor(Color.RED)
+        }
     }
 
     fun formatCurrency(vlrtotal: Double?): CharSequence? {
@@ -382,8 +463,13 @@ class MainActivity : AppCompatActivity() {
         binding.dinheiro.setOnClickListener { finalizaVenda(binding.dinheiro.text.toString().trim())}
         binding.cartao.setOnClickListener { finalizaVenda(binding.cartao.text.toString().trim())}
         binding.pix.setOnClickListener { finalizaVenda(binding.pix.text.toString().trim())}
+        binding.atualizarVlrTT.setOnClickListener { atualizaVlrTT() }
     }
 
+    private fun atualizaVlrTT(){
+        showVlrVista = showVlrVista?.not()
+        atualizarTotalGeral()
+    }
     private fun setTecladoNum(num : String){
         if (binding.tvdisplay.length() == 1 &&
             binding.tvdisplay.text == "0" && num != "Voltar"){
@@ -416,6 +502,14 @@ class MainActivity : AppCompatActivity() {
                 val hora = SimpleDateFormat("HH:mm:ss").format(calendario.time)
                 seqmov = seqmov!!.plus(1)
 
+                if (usaVlrDif == true && pagamento == "Cartão")  {
+                    vvtg = 0.0
+                    for (i in newArrayList.indices) {
+                        newArrayList[i].vlrtotal = newArrayList[i].qtde?.times(newArrayList[i].vlrUnitC!!)
+                        vvtg = vvtg!! + newArrayList[i].vlrtotal!!
+                    }
+                }
+
                 val movCaixa = hashMapOf(
                     "seqmov" to seqmov,
                     "dia" to dia,
@@ -443,7 +537,9 @@ class MainActivity : AppCompatActivity() {
                     .document(serialNnbr!!).update(hmUpdConfigCx as Map<String, Any>)
             }
             var vlrPago : Double = 0.00
-            if (binding.tvdisplay.text.toString().toDouble() < vvtg!! && binding.tvdisplay.text.toString().toDouble() != 0.00){
+            if (binding.tvdisplay.text.toString().toDouble() < vvtg!! &&
+                binding.tvdisplay.text.toString().toDouble() != 0.00 &&
+                usaVlrDif == false){
                 vlrPago = binding.tvdisplay.text.toString().toDouble()
                 vvtg = vvtg!! - binding.tvdisplay.text.toString().toDouble()
             } else{
@@ -473,14 +569,15 @@ class MainActivity : AppCompatActivity() {
             //val movCxItem = db.collection("movcxitem")
             val movCxItem = db.collection(numCx!!)
             var i : Int =1
-            for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd) in newArrayList) {
+            for ((descricao,qtdevlrun,vlrtotal,vlrUnit,qtde,idProd,vlrUnitC) in newArrayList) {
                 val movCxItemData = hashMapOf(
                         "codMovCx" to uuidMC,
                         "secItem" to i,
                         "idProd" to idProd,
                         "Produto" to descricao,
                         "VlrUnit" to vlrUnit,
-                        "Qtde" to qtde
+                        "Qtde" to qtde,
+                        "VlrUnitC" to vlrUnitC
                     )
                 i++
                 movCxItem.document(uuidCXDtMov!!).collection("MovCxItem").add(movCxItemData)
@@ -490,17 +587,42 @@ class MainActivity : AppCompatActivity() {
             atualizarTotalGeral()
             emFinalizacao = false
             binding.tvdisplay.text = "0"
-            if (troco == 0.00) {
-                Toast.makeText(this, "Venda gravada com sucesso!", Toast.LENGTH_LONG).show()
+            showVlrVista = true
+            binding.tvTotalgeral.setTextColor("#A1A1A0".toColorInt())
+            if (usaVlrDif == true && pagamento == "Cartão")  {
+                showCaixaDialogo("Atenção!!!", "Valor para pagamento em Cartão credito/debito é de ${
+                    formatCurrency( vlrPago )
+                }")
+
+//                val dialogBuild = AlertDialog.Builder(this)
+//                dialogBuild.setTitle("Atenção!!!")
+//                dialogBuild.setMessage(
+//                    "Valor para pagamento em Cartão credito/debito é de ${
+//                        formatCurrency( vlrPago )
+//                    }"
+//                )
+//                dialogBuild.setPositiveButton("Ok") { dialog, _ -> dialog.dismiss()}
+//                val alertDialog = dialogBuild.create()
+//                alertDialog.show()
             } else {
-                val dialogBuild = AlertDialog.Builder(this)
-                dialogBuild.setTitle("Atenção!")
-                dialogBuild.setMessage("Venda gravada com sucesso!\n Troco de ${formatCurrency(troco)}")
-                dialogBuild.setPositiveButton("Ok"){ dialog, _ -> dialog.dismiss()}
-                val alertDialog = dialogBuild.create()
-                alertDialog.show()
-                //Toast.makeText(this,"Venda gravada com sucesso!\n Troco de " +
-               //         "${formatCurrency(troco)}",Toast.LENGTH_LONG).show()
+                if (troco == 0.00) {
+                    Toast.makeText(this, "Venda gravada com sucesso!", Toast.LENGTH_LONG).show()
+                } else {
+                    val dialogBuild = AlertDialog.Builder(this)
+                    dialogBuild.setTitle("Atenção!")
+                    dialogBuild.setMessage(
+                        "Venda gravada com sucesso!\n Troco de ${
+                            formatCurrency(
+                                troco
+                            )
+                        }"
+                    )
+                    dialogBuild.setPositiveButton("Ok") { dialog, _ -> dialog.dismiss() }
+                    val alertDialog = dialogBuild.create()
+                    alertDialog.show()
+                    //Toast.makeText(this,"Venda gravada com sucesso!\n Troco de " +
+                    //         "${formatCurrency(troco)}",Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -602,6 +724,14 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    fun showCaixaDialogo(titulo: String, mensagem: String) {
+        val view = layoutInflater.inflate(R.layout.caixa_dialogo, null)
+        view.findViewById<TextView>(R.id.txtTitulo).text = titulo
+        view.findViewById<TextView>(R.id.txtMensagem).text = mensagem
+
+        AlertDialog.Builder(this).setView(view).setPositiveButton("OK", null).show()
     }
 
 }

@@ -22,6 +22,25 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
 
+    <ImageView
+        android:id="@+id/imgStatus"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/wifi_desconected"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/glNumbKeys"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"/>
+
+    <TextView
+        android:id="@+id/caixa"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:text=""
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/glNumbKeys"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        tools:ignore="MissingConstraints" />
     <!-- inicio da exibição dos botoes teclado -->
 
     <LinearLayout
@@ -322,7 +341,7 @@
 
                 <TextView
                     android:id="@+id/textView5"
-                    android:layout_width="120dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Valor Total:"
                     android:textAlignment="viewEnd"
@@ -337,15 +356,29 @@
                     android:id="@+id/tv_totalgeral"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="5dp"
                     android:layout_marginBottom="3dp"
                     android:text="R$ 0,00"
                     android:textAlignment="viewEnd"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/atualizarVlrTT"
                     app:layout_constraintStart_toEndOf="@+id/textView5" />
+
+                <ImageButton
+                    android:id="@+id/atualizarVlrTT"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="26dp"
+                    android:background="@null"
+                    android:contentDescription="botão"
+                    android:src="@drawable/actualizarbranco24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="1dp"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintStart_toEndOf="@+id/tv_totalgeral"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

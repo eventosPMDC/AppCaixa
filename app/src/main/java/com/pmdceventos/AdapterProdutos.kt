@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import com.pmdceventos.usaVlrDif
 import java.text.NumberFormat
 import java.util.Locale
 
-class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnList: (Int) -> Unit):
+class AdapterProdutos (private val produto: ArrayList<Produto>, val usaVlrDif : Boolean, val setItemOnList: (Int) -> Unit):
     RecyclerView.Adapter<AdapterProdutos.AdapterViewHolder>() {
 
      override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdapterViewHolder {
@@ -25,10 +26,15 @@ class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnLis
         val currentProduto = produto[position]
         val nome = currentProduto.nome
         val valor = currentProduto.valor
+        val valorC = currentProduto.valorC
         holder.btbproduto.text = buildString {
             append(nome)
             append("\n")
             append(formatCurrency(valor))
+            if (usaVlrDif) {
+                append(" / ")
+                append(formatCurrency(valorC))
+            }
         }
         holder.btbproduto.setCompoundDrawablesWithIntrinsicBounds(getState(currentProduto.imagem),0,0,0)
         holder.btbproduto.setOnClickListener { setItemOnList(position) }
@@ -101,6 +107,15 @@ class AdapterProdutos (private val produto: ArrayList<Produto>, val setItemOnLis
              }
             "SALGADOS" -> {
                  return R.drawable.salgados
+            }
+            "REGRIGERANTES" -> {
+                return R.drawable.latasrefri
+            }
+            "BOLO" -> {
+                return R.drawable.bolo
+            }
+            "DOCES" -> {
+                return R.drawable.docesp
             }
             else -> {
                 return R.drawable.baseline_catching_pokemon

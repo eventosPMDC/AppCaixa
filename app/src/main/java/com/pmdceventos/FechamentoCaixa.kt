@@ -63,11 +63,8 @@ class FechamentoCaixa : AppCompatActivity() {
             setResult(RESULT_OK)
             finish()
         }
-
         getVendas()
-
     }
-
     private fun getVendas(){
         db.collection(idcaixa!!)
             .document(dtCx!!)
@@ -146,11 +143,20 @@ class FechamentoCaixa : AppCompatActivity() {
                                         var produto = dc.document.getString("Produto")
                                         var qtde = dc.document.getDouble("Qtde")
                                         var vlrUnit = dc.document.getDouble("VlrUnit")
+                                        var vlrUnitC = dc.document.getDouble("VlrUnitC")
 
                                         lProduto += produto
                                         lQtde += "$qtde"
-                                        lVlrUnit += vlrUnit
-                                        lVlrTot += (qtde!! * vlrUnit!!)
+
+                                        if (alCobranca[j].contains("Cartão")) {
+                                            lVlrUnit += vlrUnitC
+                                            lVlrTot += (qtde!! * vlrUnitC!!)
+                                           // Log.d("PMDC Eventos", "Valor = $vlrUnitC")
+                                        }
+                                        else {
+                                            lVlrUnit += vlrUnit
+                                            lVlrTot += (qtde!! * vlrUnit!!)
+                                        }
 
                                         i++
                                     }

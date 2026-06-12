@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:orientation="vertical"
+    android:padding="20dp">
 
     <TextView
-        android:id="@+id/text_message"
+        android:id="@+id/txtTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/josefin_sans"
-        android:text="Mensagem da caixa de diálogo"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textStyle="bold" />
+        android:text="Atenção"
+        android:textAlignment="center"
+        android:textSize="28dp"
+        android:textStyle="bold"/>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_ok"
+    <TextView
+        android:id="@+id/txtMensagem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:layout_gravity="end"
-        android:text="OK"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="@+id/text_message"
-        app:layout_constraintStart_toStartOf="@+id/text_message"
-        app:layout_constraintTop_toBottomOf="@+id/text_message" />
+        android:layout_marginTop="10dp"
+        android:text="Mensagem"
+        android:textSize="25dp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
